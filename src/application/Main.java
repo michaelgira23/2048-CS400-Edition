@@ -93,7 +93,6 @@ public class Main extends Application {
 	 * @return The game header to display throughout the application at the top
 	 */
 	private Node getGameHeader() {
-		// Game header
 		Label title = new Label(Integer.toBinaryString(2048));
 		Label subtitle = new Label("2048 for nerds");
 
