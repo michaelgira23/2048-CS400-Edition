@@ -1,18 +1,30 @@
 package application;
 
 /**
- * A single tile on the game board
+ * A single tile on the game board initialized with a value of 1
  * 
  * @author Michael Gira
  *
  */
 public class GameSquare {
-	int value = 1;
-	int posX;
-	int posY;
+	private int value = 1;
 
-	public GameSquare(int posX, int posY) {
-		this.posX = posX;
-		this.posY = posY;
+	/**
+	 * Double the game square's value (upon combining with another square)
+	 * 
+	 * @return The square's new value
+	 */
+	public int increment() {
+		value *= 2;
+		return value;
+	}
+
+	/**
+	 * Get the square's current value
+	 * 
+	 * @return The square's current value
+	 */
+	public int getValue() {
+		return value;
 	}
 }

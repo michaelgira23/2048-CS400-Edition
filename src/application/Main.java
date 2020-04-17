@@ -3,9 +3,13 @@ package application;
 import java.util.List;
 
 import javafx.application.Application;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
@@ -16,11 +20,15 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-	private List<String> args;
-
-	private static final int WINDOW_WIDTH = 300;
-	private static final int WINDOW_HEIGHT = 200;
+	private static final int WINDOW_WIDTH = 800;
+	private static final int WINDOW_HEIGHT = 600;
 	private static final String APP_TITLE = "2048: CS400 Edition";
+
+	private List<String> args;
+	private Stage primaryStage;
+
+	private Game game = new Game();
+	private GameTheme currentTheme = new BinaryTheme();
 
 	/**
 	 * Sets up initial game screen
@@ -30,13 +38,9 @@ public class Main extends Application {
 		args = this.getParameters().getRaw();
 		System.out.println("Args: " + args);
 
-		BorderPane root = new BorderPane();
-
-		root.setTop(new Label(APP_TITLE));
-		Scene mainScene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-
+		this.primaryStage = primaryStage;
 		primaryStage.setTitle(APP_TITLE);
-		primaryStage.setScene(mainScene);
+		renderMenu();
 		primaryStage.show();
 	}
 
@@ -47,5 +51,56 @@ public class Main extends Application {
 	 */
 	public static void main(String[] args) {
 		launch(args);
+	}
+
+	/**
+	 * On the primary stage, display a menu with buttons to play
+	 */
+	private void renderMenu() {
+
+		// Action buttons
+		Button playButton = new Button("Play");
+		playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
+
+		// Stack game title above and action buttons below
+		VBox gameMenu = new VBox();
+		gameMenu.setAlignment(Pos.CENTER);
+		gameMenu.getChildren().addAll(getGameHeader(), playButton);
+
+		// Entire page layout
+		BorderPane menuLayout = new BorderPane();
+		menuLayout.setCenter(gameMenu);
+
+		primaryStage.setScene(new Scene(menuLayout, WINDOW_WIDTH, WINDOW_HEIGHT));
+	}
+
+	/**
+	 * On the primary stage, display the game state rendered with a given theme
+	 * 
+	 * @param theme Current theme with which to render the game
+	 */
+	private void renderGameWithTheme(GameTheme theme) {
+		BorderPane gameLayout = new BorderPane();
+		gameLayout.setTop(getGameHeader());
+		gameLayout.setCenter(theme.render(game));
+
+		primaryStage.setScene(new Scene(gameLayout, WINDOW_WIDTH, WINDOW_HEIGHT));
+	}
+
+	/**
+	 * Get a JavaFX node that has the game's title and subtitle
+	 * 
+	 * @return The game header to display throughout the application at the top
+	 */
+	private Node getGameHeader() {
+		// Game header
+		Label title = new Label(Integer.toBinaryString(2048));
+		Label subtitle = new Label("2048 for nerds");
+
+		VBox gameHeader = new VBox();
+		gameHeader.setAlignment(Pos.CENTER);
+		gameHeader.getChildren().addAll(title, subtitle);
+
+		return gameHeader;
 	}
 }
