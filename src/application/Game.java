@@ -12,7 +12,122 @@ public class Game {
 	static final int WIDTH = 4;
 
 	private GameSquare[][] board = new GameSquare[HEIGHT][WIDTH];
-
+	
+	private void slideUpHelp() {
+		GameSquare tempGS = new GameSquare();
+		for(int r = 0; r < HEIGHT; r++) {
+			for(int c = 0; c < WIDTH; c++) {
+				//if the slot has a gamesquare
+				if(board[r][c] != null) {
+					tempGS = board[r][c];
+					int tempR = r;
+					//while it's not row 0 and there's no gamesquare above it keep moving the gamesquare up 
+					while(tempR > 0 && board[tempR-1][c] == null) {
+						board[tempR-1][c] = tempGS;
+						tempGS.setPos(c, tempR-1);
+						board[tempR][c] = null;
+						tempR--;
+					}
+					//if theres a gamesquare above it (aka tempR is not 0 now)
+					if(tempR != 0) {
+						//if its value is equal to the gamesquare above it
+						if(board[tempR][c].getValue() == board[tempR-1][c].getValue()) {
+							board[tempR-1][c].increment();
+							board[tempR][c] = null;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	private void slideDownHelp() {
+		GameSquare tempGS = new GameSquare();
+		for(int r = 3; r >= 0; r--) {
+			for(int c = 0; c < WIDTH; c++) {
+				//if the slot has a gamesquare
+				if(board[r][c] != null) {
+					tempGS = board[r][c];
+					int tempR = r;
+					//while it's not row 3 and there's no gamesquare below it keep moving the gamesquare down 
+					while(tempR < 3 && board[tempR+1][c] == null) {
+						board[tempR+1][c] = tempGS;
+						tempGS.setPos(c, tempR+1);
+						board[tempR][c] = null;
+						tempR++;
+					}
+					//if theres a gamesquare below it (aka tempR is not 3 now)
+					if(tempR != 3) {
+						//if its value is equal to the gamesquare above it
+						if(board[tempR][c].getValue() == board[tempR+1][c].getValue()) {
+							board[tempR+1][c].increment();
+							board[tempR][c] = null;
+						}
+					}
+				}
+			}
+		}
+	}
+		
+	
+	
+	private void slideLeftHelp() {
+		GameSquare tempGS = new GameSquare();
+		for(int r = 0; r < HEIGHT; r++) {
+			for(int c = 0; c < WIDTH; c++) {
+				//if the slot has a gamesquare
+				if(board[r][c] != null) {
+					tempGS = board[r][c];
+					int tempC = c;
+					//while it's not col 0 and there's no gamesquare to the left of it keep moving the gamesquare left 
+					while(tempC > 0 && board[r][tempC-1] == null) {
+						board[r][tempC] = tempGS;
+						tempGS.setPos(tempC-1, r);
+						board[r][tempC] = null;
+						tempC--;
+					}
+					//if theres a gamesquare to the left of it it (aka tempC is not 0 now)
+					if(tempC != 0) {
+						//if its value is equal to the gamesquare to the left of it
+						if(board[r][tempC].getValue() == board[r][tempC-1].getValue()) {
+							board[r][tempC-1].increment();
+							board[r][tempC] = null;
+						}
+					}
+				}
+			}
+		}
+		
+	}
+	
+	private void slideRightHelp() {
+		GameSquare tempGS = new GameSquare();
+		for(int r = 0; r < HEIGHT; r++) {
+			for(int c = 3; c >= 0; c--) {
+				//if the slot has a gamesquare
+				if(board[r][c] != null) {
+					tempGS = board[r][c];
+					int tempC = c;
+					//while it's not col 3 and there's no gamesquare to the right of it keep moving the gamesquare right 
+					while(tempC < 3 && board[r][tempC+1] == null) {
+						board[r][tempC] = tempGS;
+						tempGS.setPos(tempC+1, r);
+						board[r][tempC] = null;
+						tempC++;
+					}
+					//if theres a gamesquare to the right of it (aka tempC is not 3 now)
+					if(tempC != 3) {
+						//if its value is equal to the gamesquare to the right of it
+						if(board[r][tempC].getValue() == board[r][tempC+1].getValue()) {
+							board[r][tempC+1].increment();
+							board[r][tempC] = null;
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Slide all the squares in a particular direction, possibly combining similar
 	 * squares
@@ -20,7 +135,18 @@ public class Game {
 	 * @param direction Direction to slide
 	 */
 	public void slide(Direction direction) {
-		/** @TODO */
+		if(direction == Up) {
+			slideUpHelp();
+		}
+		if(direction == Down) {
+			slideDownHelp();
+		}
+		if(direction == Left) {
+			slideLeftHelp();
+		}
+		if(direction == Right) {
+			slideRightHelp();
+		}
 	}
 
 	/**
