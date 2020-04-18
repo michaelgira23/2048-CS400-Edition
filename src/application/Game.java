@@ -14,7 +14,10 @@ public class Game {
 	private GameSquare[][] board = new GameSquare[HEIGHT][WIDTH];
 
 	public Game() {
-		board[3][3] = new GameSquare();
+		board[2][3] = new GameSquare();
+		board[2][2] = new GameSquare();
+		board[1][2] = new GameSquare();
+		board[1][2].increment();
 	}
 
 	/**

@@ -47,7 +47,7 @@ public class BinaryTheme implements GameTheme {
 					displayTile.getChildren().add(label);
 				}
 
-				grid.add(displayTile, i, j);
+				grid.add(displayTile, j, i);
 			}
 		}
 

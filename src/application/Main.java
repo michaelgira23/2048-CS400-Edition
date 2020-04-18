@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -84,8 +85,25 @@ public class Main extends Application {
 	 */
 	private void renderGameWithTheme(GameTheme theme) {
 		BorderPane gameLayout = new BorderPane();
-		gameLayout.setTop(getGameHeader());
+
+		// Game title + action buttons at the top
+		Button menuButton = new Button("Menu");
+		menuButton.setOnAction(e -> renderMenu());
+
+		VBox gameHeader = new VBox();
+		gameHeader.setAlignment(Pos.CENTER);
+		gameHeader.getChildren().addAll(getGameHeader(), menuButton);
+		gameLayout.setTop(gameHeader);
+
+		// Game rendered with theme in the center
 		gameLayout.setCenter(theme.render(game));
+
+		// Game instructions on the bottom
+		HBox instructions = new HBox();
+		instructions.setId("instructions");
+		instructions.setAlignment(Pos.CENTER);
+		instructions.getChildren().add(new Label("use the arrows keys or WASD to move the board"));
+		gameLayout.setBottom(instructions);
 
 		Scene gameScene = new Scene(gameLayout, WINDOW_WIDTH, WINDOW_HEIGHT);
 		gameScene.getStylesheets().addAll("application/application.css", "application/game.css");
