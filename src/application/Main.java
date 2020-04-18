@@ -60,6 +60,7 @@ public class Main extends Application {
 
 		// Action buttons
 		Button playButton = new Button("Play");
+		playButton.setId("play");
 		playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
 
 		// Stack game title above and action buttons below
@@ -71,7 +72,9 @@ public class Main extends Application {
 		BorderPane menuLayout = new BorderPane();
 		menuLayout.setCenter(gameMenu);
 
-		primaryStage.setScene(new Scene(menuLayout, WINDOW_WIDTH, WINDOW_HEIGHT));
+		Scene menuScene = new Scene(menuLayout, WINDOW_WIDTH, WINDOW_HEIGHT);
+		menuScene.getStylesheets().addAll("application/application.css", "application/menu.css");
+		primaryStage.setScene(menuScene);
 	}
 
 	/**
@@ -84,7 +87,9 @@ public class Main extends Application {
 		gameLayout.setTop(getGameHeader());
 		gameLayout.setCenter(theme.render(game));
 
-		primaryStage.setScene(new Scene(gameLayout, WINDOW_WIDTH, WINDOW_HEIGHT));
+		Scene gameScene = new Scene(gameLayout, WINDOW_WIDTH, WINDOW_HEIGHT);
+		gameScene.getStylesheets().addAll("application/application.css", "application/game.css");
+		primaryStage.setScene(gameScene);
 	}
 
 	/**
