@@ -13,6 +13,10 @@ public class Game {
 
 	private GameSquare[][] board = new GameSquare[HEIGHT][WIDTH];
 
+	public Game() {
+		board[3][3] = new GameSquare();
+	}
+
 	/**
 	 * Slide all the squares in a particular direction, possibly combining similar
 	 * squares

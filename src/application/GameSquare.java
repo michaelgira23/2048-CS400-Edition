@@ -1,13 +1,13 @@
 package application;
 
 /**
- * A single tile on the game board initialized with a value of 1
+ * A single tile on the game board initialized with a value of 2
  * 
  * @author Michael Gira
  *
  */
 public class GameSquare {
-	private int value = 1;
+	private int value = 2;
 
 	/**
 	 * Double the game square's value (upon combining with another square)

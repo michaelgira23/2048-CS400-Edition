@@ -1,0 +1,58 @@
+.tile {
+	-fx-pref-width: 100;
+	-fx-pref-height: 100;
+	-fx-background-radius: 5;
+	-fx-text-fill: #363062;
+}
+
+.empty {
+	-fx-background-color: #F1F1F1;
+}
+
+.value {
+	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 5);
+}
+
+.value-2 {
+	-fx-background-color: #D8B9C3;
+}
+
+.value-4 {
+	-fx-background-color: #C8ABB9;
+}
+
+.value-8 {
+	-fx-background-color: #B89EB0;
+}
+
+.value-16 {
+	-fx-background-color: #A790A6;
+}
+
+.value-32 {
+	-fx-background-color: #97829C;
+}
+
+.value-64 {
+	-fx-background-color: #877593;
+}
+
+.value-128 {
+	-fx-background-color: #776789;
+}
+
+.value-256 {
+	-fx-background-color: #67597F;
+}
+
+.value-512 {
+	-fx-background-color: #564B75;
+}
+
+.value-1024 {
+	-fx-background-color: #463E6C;
+}
+
+.value-2048 {
+	-fx-background-color: #363062;
+}
