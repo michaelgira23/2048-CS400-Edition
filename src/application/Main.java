@@ -39,6 +39,9 @@ public class Main extends Application {
 		args = this.getParameters().getRaw();
 		System.out.println("Args: " + args);
 
+		// Load Insolata font
+//		Font.loadFont(getClass().getResource("application/fonts/Inconsolata-Regular.ttf").toExternalForm());
+
 		this.primaryStage = primaryStage;
 		primaryStage.setTitle(APP_TITLE);
 		renderMenu();
@@ -67,7 +70,7 @@ public class Main extends Application {
 		// Stack game title above and action buttons below
 		VBox gameMenu = new VBox();
 		gameMenu.setAlignment(Pos.CENTER);
-		gameMenu.getChildren().addAll(getGameHeader(), playButton);
+		gameMenu.getChildren().addAll(getGameHeader(true), playButton);
 
 		// Entire page layout
 		BorderPane menuLayout = new BorderPane();
@@ -92,7 +95,7 @@ public class Main extends Application {
 
 		VBox gameHeader = new VBox();
 		gameHeader.setAlignment(Pos.CENTER);
-		gameHeader.getChildren().addAll(getGameHeader(), menuButton);
+		gameHeader.getChildren().addAll(getGameHeader(false), menuButton);
 		gameLayout.setTop(gameHeader);
 
 		// Game rendered with theme in the center
@@ -113,11 +116,26 @@ public class Main extends Application {
 	/**
 	 * Get a JavaFX node that has the game's title and subtitle
 	 * 
+	 * @param big Whether to have the large variant (with bigger font size and line
+	 *            break in middle)
 	 * @return The game header to display throughout the application at the top
 	 */
-	private Node getGameHeader() {
+	private Node getGameHeader(boolean big) {
 		Label title = new Label(Integer.toBinaryString(2048));
+		title.setId("title");
+
+		// Optionally add line break in between the text
+		if (big) {
+			String titleText = title.getText();
+			String firstHalf = titleText.substring(0, titleText.length() / 2);
+			String secondHalf = titleText.substring(titleText.length() / 2);
+			title.setText(firstHalf + System.lineSeparator() + secondHalf);
+		} else {
+			title.getStyleClass().add("small");
+		}
+
 		Label subtitle = new Label("2048 for nerds");
+		subtitle.setId("subtitle");
 
 		VBox gameHeader = new VBox();
 		gameHeader.setAlignment(Pos.CENTER);

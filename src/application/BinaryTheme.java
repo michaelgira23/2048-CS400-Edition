@@ -21,6 +21,8 @@ public class BinaryTheme implements GameTheme {
 		GridPane grid = new GridPane();
 		grid.getStylesheets().addAll("application/binary-theme.css");
 		grid.setAlignment(Pos.CENTER);
+
+		// Set a margin of 8 pixels between tiles
 		grid.setHgap(8);
 		grid.setVgap(8);
 
@@ -44,6 +46,8 @@ public class BinaryTheme implements GameTheme {
 					// Place game tile
 					displayTile.getStyleClass().addAll("value", "value-" + tile.getValue());
 					Label label = new Label(String.valueOf(tile.getValue()));
+					label.getStyleClass().add("tile-label");
+//					label.setStyle("-fx-text-fill: blue;");
 					displayTile.getChildren().add(label);
 				}
 

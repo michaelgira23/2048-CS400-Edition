@@ -18,6 +18,9 @@ public class Game {
 		board[2][2] = new GameSquare();
 		board[1][2] = new GameSquare();
 		board[1][2].increment();
+		board[1][2].increment();
+		board[1][2].increment();
+		board[1][2].increment();
 	}
 
 	/**

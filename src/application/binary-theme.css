@@ -2,7 +2,13 @@
 	-fx-pref-width: 100;
 	-fx-pref-height: 100;
 	-fx-background-radius: 5;
-	-fx-text-fill: #363062;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-weight: bold;
+	-fx-font-size: 24;
+}
+
+.tile-label {
+	-fx-text-fill: #FFF;
 }
 
 .empty {

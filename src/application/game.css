@@ -1,3 +1,9 @@
+#title {
+	font-size: 48;
+}
+
 #instructions {
 	-fx-padding: 24 32 32 32;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-size: 14;
 }
