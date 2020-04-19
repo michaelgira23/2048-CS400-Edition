@@ -114,27 +114,43 @@ public class Game {
 	
 	
 	private void slideLeftHelp() {
+		GameSquare tempGS = new GameSquare();
 		for(int r = 0; r < HEIGHT; r++) {
-			boolean combineOccurred = false;
-			int nextAvailable = 0;
-			if(board[r][0] != null) {
-				nextAvailable = 1;
-			}
-			for(int i = nextAvailable; i < board.length; i++) {
-				if(board[r][i] != null) {
-					board[r][nextAvailable] = board[r][i];
-					board[r][i] = null;
-					nextAvailable++;
-					
-					if(nextAvailable > 1 && combineOccurred == false) {
-						if(board[r][nextAvailable-1].getValue() == board[r][nextAvailable-2].getValue()) {
-							board[r][nextAvailable-2].increment();
-							board[r][nextAvailable-1] = null;
-							nextAvailable--;
+			for(int c = 0; c < WIDTH; c++) {
+				//if the slot has a gamesquare
+				if(board[r][c] != null) {
+					tempGS = board[r][c];
+					int tempC = c;
+					boolean repeat = true;
+					if(tempC == 0) {
+						repeat = false;
+					}
+					else if(board[r][tempC-1] != null) {
+						repeat = false;
+					}
+					else {
+						//while it's not col 3 and there's no gamesquare above it keep moving the gamesquare up
+						while(repeat == true) {
+							board[r][tempC-1] = tempGS;
+							tempGS.setPos(tempC-1, r);
+							board[r][tempC] = null;
+							tempC--;
+							if(tempC == 0) {
+								repeat = false;
+							}
+							else if(board[r][tempC-1] != null) {
+								repeat = false;
+							}
+						}	
+					}
+					//if theres a gamesquare above it (aka tempR is not 3)
+					if(tempC != 0) {
+						if(board[r][tempC-1].getValue() == board[r][tempC].getValue()) {
+							board[r][tempC] = null;
+							board[r][tempC-1].increment();
 						}
 					}
 				}
-				
 			}
 		}
 
