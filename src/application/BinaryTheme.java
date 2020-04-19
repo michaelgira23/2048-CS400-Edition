@@ -1,6 +1,7 @@
 package application;
 
 import javafx.animation.Interpolator;
+import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
@@ -60,6 +61,9 @@ public class BinaryTheme implements GameTheme {
 		}
 
 		game.setSlideHandler((slides, done) -> {
+			// Batch the transitions altogether
+			ParallelTransition translations = new ParallelTransition();
+
 			for (SlideEvent slide : slides) {
 				System.out.println("Slide: " + slide);
 
@@ -72,15 +76,16 @@ public class BinaryTheme implements GameTheme {
 				Node targetTile = getBackgroundTileFromGrid(grid, slide.toRow, slide.toColumn);
 				Bounds targetBounds = targetTile.getBoundsInParent();
 
-				TranslateTransition translate = new TranslateTransition(Duration.millis(250), tile);
+				TranslateTransition translate = new TranslateTransition(Duration.millis(200), tile);
 				translate.setInterpolator(Interpolator.EASE_OUT);
 				translate.setByX(targetBounds.getCenterX() - tileBounds.getCenterX());
 				translate.setByY(targetBounds.getCenterY() - tileBounds.getCenterY());
 
-				translate.play();
+				translations.getChildren().add(translate);
 			}
 
-			done.done();
+			translations.setOnFinished(e -> done.done());
+			translations.play();
 		});
 
 		return grid;
