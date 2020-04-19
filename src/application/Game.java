@@ -11,8 +11,10 @@ public class Game {
 
 	static final int HEIGHT = 4;
 	static final int WIDTH = 4;
+
 	private GameSquare[][] board = new GameSquare[HEIGHT][WIDTH];
-	// Functional interface called
+
+	// Functional interface to call when new changes occur
 	private SlideHandler slideHandler = null;
 
 	public Game() {
@@ -220,18 +222,13 @@ public class Game {
 		}
 
 		// Mimic slide events for now
-		SlideEvent[] slides = { new SlideEvent(board[2][3], true, 2, 3, 2, 0),
-				new SlideEvent(board[2][2], false, 2, 2, 2, 0), new SlideEvent(board[1][2], false, 1, 2, 1, 0) };
+		SlideEvent[] slides = { new SlideEvent(board[2][3], SlideEventAction.CombineOver, 2, 3, 2, 0),
+				new SlideEvent(board[2][2], SlideEventAction.CombineUnder, 2, 2, 2, 0),
+				new SlideEvent(board[1][2], SlideEventAction.None, 1, 2, 1, 0) };
 
-		SlideDoneHandler doneHandler = () -> {
-			System.out.println("All done!");
-			/** @TODO Actually update internal game state to reflect new slide */
-		};
-
-		if (slideHandler == null) {
-			doneHandler.done();
-		} else {
-			slideHandler.handle(slides, doneHandler);
+		// Reflect these changes into the GUI interface
+		if (slideHandler != null) {
+			slideHandler.handle(slides);
 		}
 	}
 

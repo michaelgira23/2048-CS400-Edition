@@ -7,5 +7,7 @@ package application;
  *
  */
 public interface SlideHandler {
-	public void handle(SlideEvent[] event, SlideDoneHandler done);
+	// Receive array of SlidEvents that will represent the diffs from the old board
+	// to the current board
+	public void handle(SlideEvent[] event);
 }

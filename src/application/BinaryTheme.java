@@ -19,11 +19,12 @@ import javafx.util.Duration;
  */
 public class BinaryTheme implements GameTheme {
 
+	GridPane grid = new GridPane();
+
 	/**
 	 * Renders the game
 	 */
 	public Node render(Game game) {
-		GridPane grid = new GridPane();
 		grid.getStylesheets().addAll("application/binary-theme.css");
 		grid.setAlignment(Pos.CENTER);
 
@@ -31,7 +32,60 @@ public class BinaryTheme implements GameTheme {
 		grid.setHgap(8);
 		grid.setVgap(8);
 
-		GameSquare[][] board = game.getBoard();
+		updateBoard(game.getBoard());
+
+		// Reflect any new changes when the game state changes
+		game.setSlideHandler(slides -> {
+			// Batch the transitions altogether
+			ParallelTransition translations = new ParallelTransition();
+
+			for (SlideEvent slide : slides) {
+				System.out.println("Slide: " + slide);
+
+				// Get the node we're supposed to move
+				Node tile = getTileFromGrid(grid, slide.fromRow, slide.fromColumn);
+
+				// We should always be moving a tile that
+				if (tile == null) {
+					System.out.println("Trying to move nonexistent tile at position (" + slide.fromRow + ", "
+							+ slide.fromColumn + "). This should NEVER happen!!!");
+					continue;
+				}
+
+				Bounds tileBounds = tile.getBoundsInParent();
+
+				// Get the empty tile at the position we're trying to move to, so that we can
+				// get the new coordinates
+				Node targetTile = getBackgroundTileFromGrid(grid, slide.toRow, slide.toColumn);
+				Bounds targetBounds = targetTile.getBoundsInParent();
+
+				TranslateTransition translate = new TranslateTransition(Duration.millis(200), tile);
+				translate.setInterpolator(Interpolator.EASE_OUT);
+				translate.setByX(targetBounds.getCenterX() - tileBounds.getCenterX());
+				translate.setByY(targetBounds.getCenterY() - tileBounds.getCenterY());
+
+				translations.getChildren().add(translate);
+			}
+
+			translations.setOnFinished(e -> {
+				updateBoard(game.getBoard());
+			});
+
+			translations.play();
+		});
+
+		return grid;
+	}
+
+	/**
+	 * Update the grid with a 2D array of game tiles
+	 * 
+	 * @param board 2D array of game tiles
+	 */
+	private void updateBoard(GameSquare[][] board) {
+		// Clear grid
+		grid.getChildren().clear();
+
 		for (int i = 0; i < board.length; i++) {
 			GameSquare[] row = board[i];
 
@@ -59,36 +113,6 @@ public class BinaryTheme implements GameTheme {
 
 			}
 		}
-
-		game.setSlideHandler((slides, done) -> {
-			// Batch the transitions altogether
-			ParallelTransition translations = new ParallelTransition();
-
-			for (SlideEvent slide : slides) {
-				System.out.println("Slide: " + slide);
-
-				// Get the node we're supposed to move
-				Node tile = getTileFromGrid(grid, slide.fromRow, slide.fromColumn);
-				Bounds tileBounds = tile.getBoundsInParent();
-
-				// Get the empty tile at the position we're trying to move to, so that we can
-				// get the new coordinates
-				Node targetTile = getBackgroundTileFromGrid(grid, slide.toRow, slide.toColumn);
-				Bounds targetBounds = targetTile.getBoundsInParent();
-
-				TranslateTransition translate = new TranslateTransition(Duration.millis(200), tile);
-				translate.setInterpolator(Interpolator.EASE_OUT);
-				translate.setByX(targetBounds.getCenterX() - tileBounds.getCenterX());
-				translate.setByY(targetBounds.getCenterY() - tileBounds.getCenterY());
-
-				translations.getChildren().add(translate);
-			}
-
-			translations.setOnFinished(e -> done.done());
-			translations.play();
-		});
-
-		return grid;
 	}
 
 	/**

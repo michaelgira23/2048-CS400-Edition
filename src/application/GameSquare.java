@@ -13,15 +13,12 @@ public class GameSquare {
 	private int value = 2;
 	private int posX;
 	private int posY;
-	private boolean combined;
+	private boolean combined = false;
 
 	public GameSquare() {
-		value = 1;
 		Random ran = new Random();
-		posX = ran.nextInt(5);
-		posY = ran.nextInt(5);
-		combined = false;
-
+		posX = ran.nextInt(Game.WIDTH + 1);
+		posY = ran.nextInt(Game.HEIGHT + 1);
 	}
 
 	/**
