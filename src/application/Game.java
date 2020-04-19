@@ -12,6 +12,8 @@ public class Game {
 	static final int WIDTH = 4;
 
 	private GameSquare[][] board = new GameSquare[HEIGHT][WIDTH];
+	// Functional interface called
+	private SlideHandler slideHandler = null;
 
 	public Game() {
 		board[2][3] = new GameSquare();
@@ -24,6 +26,15 @@ public class Game {
 	}
 
 	/**
+	 * Set the handler for triggering animations once they have
+	 * 
+	 * @param handler Handler which will receive all the new slide events
+	 */
+	public void setSlideHandler(SlideHandler handler) {
+		slideHandler = handler;
+	}
+
+	/**
 	 * Slide all the squares in a particular direction, possibly combining similar
 	 * squares
 	 * 
@@ -31,6 +42,21 @@ public class Game {
 	 */
 	public void slide(Direction direction) {
 		/** @TODO */
+
+		// Mimic slide events for now
+		SlideEvent[] slides = { new SlideEvent(board[2][3], true, 2, 3, 2, 0),
+				new SlideEvent(board[2][2], false, 2, 2, 2, 0), new SlideEvent(board[1][2], false, 1, 2, 1, 0) };
+
+		SlideDoneHandler doneHandler = () -> {
+			System.out.println("All done!");
+			/** @TODO Actually update internal game state to reflect new slide */
+		};
+
+		if (slideHandler == null) {
+			doneHandler.done();
+		} else {
+			slideHandler.handle(slides, doneHandler);
+		}
 	}
 
 	/**

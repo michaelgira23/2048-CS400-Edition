@@ -7,12 +7,12 @@
 	-fx-font-size: 24;
 }
 
-.tile-label {
-	-fx-text-fill: #FFF;
-}
-
 .empty {
 	-fx-background-color: #F1F1F1;
+}
+
+.value-label {
+	-fx-text-fill: #FFF;
 }
 
 .value {

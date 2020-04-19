@@ -167,6 +167,7 @@ public class Main extends Application {
 		}
 
 		System.out.println("slide direction: " + direction);
+		game.slide(direction);
 	}
 
 	/**
