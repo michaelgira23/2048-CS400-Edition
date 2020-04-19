@@ -1,5 +1,7 @@
 package application;
 
+import java.util.Random;
+
 /**
  * A single tile on the game board initialized with a value of 1
  * 
@@ -21,7 +23,6 @@ public class GameSquare {
 
 	}
 
-
 	/**
 	 * Double the game square's value (upon combining with another square)
 	 * 
@@ -40,24 +41,24 @@ public class GameSquare {
 	public int getValue() {
 		return value;
 	}
-	
+
 	public void setPos(int x, int y) {
 		posX = x;
 		posY = y;
 	}
-	
+
 	public int getX() {
 		return posX;
 	}
-	
+
 	public int getY() {
 		return posY;
 	}
-	
+
 	public boolean getComb() {
 		return combined;
 	}
-	
+
 	public void setComb(boolean status) {
 		combined = status;
 	}

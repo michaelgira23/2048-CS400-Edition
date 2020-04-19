@@ -7,5 +7,5 @@ package application;
  *
  */
 public enum Direction {
-	Up, Right, Bottom, Left
+	Up, Right, Down, Left
 }
