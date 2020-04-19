@@ -1,0 +1,33 @@
+@font-face {
+	font-family: 'Inconsolata';
+	font-weight: normal;
+	src: url('fonts/Inconsolata-Regular.ttf');
+}
+
+@font-face {
+	font-family: 'Inconsolata';
+	font-weight: bold;
+	src: url('fonts/Inconsolata-Bold.ttf');
+}
+
+.root {
+	-fx-background-color: #FFF;
+}
+
+#title {
+	-fx-font-family: 'Inconsolata';
+	-fx-font-weight: bold;
+	-fx-font-size: 64;
+	-fx-text-fill: #363062;
+}
+
+#title.small {
+	-fx-font-size: 48;
+}
+
+#subtitle {
+	-fx-padding: 14;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-size: 18;
+	-fx-text-fill: #827397;
+}

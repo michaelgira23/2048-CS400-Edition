@@ -1,0 +1,10 @@
+#play {
+	-fx-padding: 32;
+	-fx-background-color: #FFF;
+	-fx-background-radius: 5;
+	-fx-text-fill: #363062;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-weight: bold;
+	-fx-font-size: 18;
+	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 20, 0, 0, 10);
+}

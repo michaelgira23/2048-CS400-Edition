@@ -3,13 +3,14 @@ package application;
 import java.util.Random;
 
 /**
- * A single tile on the game board initialized with a value of 1
+ * A single tile on the game board initialized with a value of 2
  * 
  * @author Michael Gira
  *
  */
 public class GameSquare {
-	private int value = 1;
+
+	private int value = 2;
 	private int posX;
 	private int posY;
 	private boolean combined;
