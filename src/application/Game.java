@@ -129,7 +129,7 @@ public class Game {
 						repeat = false;
 					}
 					else {
-						//while it's not col 3 and there's no gamesquare above it keep moving the gamesquare up
+						//while it's not col 0 and there's no gamesquare above it keep moving the gamesquare up
 						while(repeat == true) {
 							board[r][tempC-1] = tempGS;
 							tempGS.setPos(tempC-1, r);
@@ -143,7 +143,7 @@ public class Game {
 							}
 						}	
 					}
-					//if theres a gamesquare above it (aka tempR is not 3)
+					//if theres a gamesquare above it (aka tempR is not 0)
 					if(tempC != 0) {
 						if(board[r][tempC-1].getValue() == board[r][tempC].getValue()) {
 							board[r][tempC] = null;
