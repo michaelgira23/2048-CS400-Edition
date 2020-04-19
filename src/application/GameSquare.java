@@ -8,6 +8,19 @@ package application;
  */
 public class GameSquare {
 	private int value = 1;
+	private int posX;
+	private int posY;
+	private boolean combined;
+
+	public GameSquare() {
+		value = 1;
+		Random ran = new Random();
+		posX = ran.nextInt(5);
+		posY = ran.nextInt(5);
+		combined = false;
+
+	}
+
 
 	/**
 	 * Double the game square's value (upon combining with another square)
@@ -26,5 +39,26 @@ public class GameSquare {
 	 */
 	public int getValue() {
 		return value;
+	}
+	
+	public setPos(int x, int y) {
+		posX = x;
+		posY = y;
+	}
+	
+	public getX() {
+		return posX;
+	}
+	
+	public getY() {
+		return posY;
+	}
+	
+	public boolean getComb() {
+		return combined;
+	}
+	
+	public void setComb(boolean status) {
+		combined = status;
 	}
 }
