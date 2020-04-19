@@ -41,16 +41,16 @@ public class GameSquare {
 		return value;
 	}
 	
-	public setPos(int x, int y) {
+	public void setPos(int x, int y) {
 		posX = x;
 		posY = y;
 	}
 	
-	public getX() {
+	public int getX() {
 		return posX;
 	}
 	
-	public getY() {
+	public int getY() {
 		return posY;
 	}
 	

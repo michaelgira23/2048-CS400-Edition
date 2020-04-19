@@ -10,38 +10,7 @@ import java.util.Random;
 public class Game {
 
 	static final int HEIGHT = 4;
-	static final int WIDTH = 4;
-	
-	private int value = 1;
-	private int posX;
-	private int posY;
-	
-	private class GameSquare {
-		private GameSquare() {
-			value = 1;
-			Random ran = new Random();
-			posX = ran.nextInt(5);
-			posY = ran.nextInt(5);
-		}
-		public int increment() {
-			value *= 2;
-			return value;
-		}
-		public int getValue() {
-			return value;
-		}
-		public setPos(int x, int y) {
-			posX = x;
-			posY = y;
-		}	
-		public getX() {
-			return posX;
-		}
-		public getY() {
-			return posY;
-		}
-	}
-
+	static final int WIDTH = 4;	
 	private GameSquare[][] board = new GameSquare[HEIGHT][WIDTH];
 	
 
