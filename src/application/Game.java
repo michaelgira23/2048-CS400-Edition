@@ -14,7 +14,20 @@ public class Game {
 	private GameSquare[][] board = new GameSquare[HEIGHT][WIDTH];
 	
 
-	private void slideUpHelp() {
+	public void resetCombineStatus() {
+		for(int r = 0; r < HEIGHT; r++) {
+			for(int c = 0; c < WIDTH; c++) {
+				if(board[r][c] != null) {
+					board[r][c].setComb(false);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Helper method when GameSquares slide up
+	 */
+	public void slideUpHelp() {
 		GameSquare tempGS = new GameSquare();
 		for(int r = 0; r < HEIGHT; r++) {
 			for(int c = 0; c < WIDTH; c++) {
@@ -23,15 +36,7 @@ public class Game {
 					tempGS = board[r][c];
 					int tempR = r;
 					boolean repeat = true;
-					if(tempR == 0) {
-						repeat = false;
-						System.out.println("c");
-					}
-					else if(board[tempR - 1][c] != null) {
-						System.out.println("b");
-						repeat = false;
-					}
-					else {
+					if(tempR != 0 && board[tempR - 1][c] == null){
 						//while it's not row 0 and there's no gamesquare above it keep moving the gamesquare up
 						while(repeat == true) {
 							board[tempR-1][c] = tempGS;
@@ -40,34 +45,29 @@ public class Game {
 							tempR--;
 							if(tempR == 0) {
 								repeat = false;
-								System.out.println("f");
 							}
 							else if(board[tempR - 1][c] != null) {
 								repeat = false;
-								System.out.println("g");
 							}
 						}	
 					}
-					//if theres a gamesquare above it (aka tempR is not 0)
-					if (tempR == 0) {
-						System.out.println("e");
-					}
-					else {
-						System.out.println("a");
+					//if theres a gamesquare above it (aka tempR is not 0) check if combo is possible
+					if(tempR != 0 && board[tempR-1][c].getComb() == false) {
 						if(board[tempR][c].getValue() == board[tempR-1][c].getValue()) {
-							System.out.println("h");
 							board[tempR][c] = null;
 							board[tempR-1][c].increment();
+							board[tempR-1][c].setComb(true);
 						}
 					}
-					System.out.println(tempGS.getX() + "," + tempGS.getY());
 				}
 			}
 		}
+		resetCombineStatus();
 	}
 	
+	
 		
-	private void slideDownHelp() {
+	public void slideDownHelp() {
 		GameSquare tempGS = new GameSquare();
 		for(int r = 3; r >= 0; r--) {
 			for(int c = 0; c < WIDTH; c++) {
@@ -76,14 +76,8 @@ public class Game {
 					tempGS = board[r][c];
 					int tempR = r;
 					boolean repeat = true;
-					if(tempR == 3) {
-						repeat = false;
-					}
-					else if(board[tempR + 1][c] != null) {
-						repeat = false;
-					}
-					else {
-						//while it's not row 0 and there's no gamesquare above it keep moving the gamesquare up
+					if(tempR != 3 && board[tempR + 1][c] == null) {
+						//while it's not row 3 and there's no gamesquare below it keep moving the gamesquare down
 						while(repeat == true) {
 							board[tempR+1][c] = tempGS;
 							tempGS.setPos(c, tempR+1);
@@ -97,9 +91,9 @@ public class Game {
 							}
 						}	
 					}
-					//if theres a gamesquare above it (aka tempR is not 3)
-					if(tempR != 3) {
-						if(board[tempR][c].getValue() == board[tempR+1][c].getValue()) {
+					//if theres a gamesquare below it (aka tempR is not 3) check if combo is possible
+					if(tempR != 3 && board[tempR+1][c].getComb() == false) {
+						if(board[tempR][c].getValue() == board[tempR+1][c].getValue() ) {
 							board[tempR][c] = null;
 							board[tempR+1][c].increment();
 						}
@@ -107,13 +101,14 @@ public class Game {
 				}
 			}
 		}
+		resetCombineStatus();
 	}
 	
 	
 		
 	
 	
-	private void slideLeftHelp() {
+	public void slideLeftHelp() {
 		GameSquare tempGS = new GameSquare();
 		for(int r = 0; r < HEIGHT; r++) {
 			for(int c = 0; c < WIDTH; c++) {
@@ -122,14 +117,8 @@ public class Game {
 					tempGS = board[r][c];
 					int tempC = c;
 					boolean repeat = true;
-					if(tempC == 0) {
-						repeat = false;
-					}
-					else if(board[r][tempC-1] != null) {
-						repeat = false;
-					}
-					else {
-						//while it's not col 0 and there's no gamesquare above it keep moving the gamesquare up
+					//while it's not col 0 and there's no gamesquare to the left of it keep moving the gamesquare left
+					if(tempC != 0 && board[r][tempC-1] == null){
 						while(repeat == true) {
 							board[r][tempC-1] = tempGS;
 							tempGS.setPos(tempC-1, r);
@@ -143,8 +132,8 @@ public class Game {
 							}
 						}	
 					}
-					//if theres a gamesquare above it (aka tempR is not 0)
-					if(tempC != 0) {
+					//if theres a gamesquare to the left of it (aka tempC is not 0) check if combo is possible
+					if(tempC != 0 && board[r][tempC-1].getComb() == false) {
 						if(board[r][tempC-1].getValue() == board[r][tempC].getValue()) {
 							board[r][tempC] = null;
 							board[r][tempC-1].increment();
@@ -153,12 +142,10 @@ public class Game {
 				}
 			}
 		}
-
+		resetCombineStatus();
 	}
 	
-	
-	
-	private void slideRightHelp() {
+	public void slideRightHelp() {
 		GameSquare tempGS = new GameSquare();
 		for(int r = 0; r < HEIGHT; r++) {
 			for(int c = 3; c >= 0; c--) {
@@ -167,14 +154,8 @@ public class Game {
 					tempGS = board[r][c];
 					int tempC = c;
 					boolean repeat = true;
-					if(tempC == 3) {
-						repeat = false;
-					}
-					else if(board[r][tempC+1] != null) {
-						repeat = false;
-					}
-					else {
-						//while it's not col 3 and there's no gamesquare above it keep moving the gamesquare up
+					//while it's not col 3 and there's no gamesquare to the right of it keep moving the gamesquare right
+					if(tempC != 3 && board[r][tempC+1] == null) {
 						while(repeat == true) {
 							board[r][tempC+1] = tempGS;
 							tempGS.setPos(tempC+1, r);
@@ -188,8 +169,8 @@ public class Game {
 							}
 						}	
 					}
-					//if theres a gamesquare above it (aka tempR is not 3)
-					if(tempC < 3) {
+					//if theres a gamesquare to the right of it (aka tempC is not 3)
+					if(tempC < 3 && board[r][tempC+1].getComb() == false) {
 						if(board[r][tempC+1].getValue() == board[r][tempC].getValue()) {
 							board[r][tempC] = null;
 							board[r][tempC+1].increment();
@@ -198,7 +179,9 @@ public class Game {
 				}
 			}
 		}
+		resetCombineStatus();
 	}
+	
 	
 	/**
 	 * Slide all the squares in a particular direction, possibly combining similar
