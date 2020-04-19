@@ -34,6 +34,11 @@ public class Games2048 extends JFrame {
 	// 64 }, { 0, 0, 64, 128 } };
 	private int[][] numbers = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
 	private int score = 0;
+	
+	public static void main(String[] args) {
+		Games2048 games = new Games2048();
+		games.setVisible(true);
+	}
 
 	public Games2048() {
 		setTitle("2048 Version 2");
@@ -74,7 +79,7 @@ public class Games2048 extends JFrame {
 				pnlGround.add(buttons[i][j]);
 			}
 		}
-		// Tạo 2 số 2 mới
+		// Táº¡o 2 sá»‘ 2 má»›i
 		newNumber();
 		newNumber();
 		// Update UI
@@ -102,11 +107,11 @@ public class Games2048 extends JFrame {
 			private void slideUp() {
 				boolean isMoved = false;
 				for (int j = 0; j < numbers[0].length; j++) {
-					// B1:Dồn lần 1
+					// B1:Dá»“n láº§n 1
 					int dem = 0;
 					for (int i = 0; i < numbers.length - dem; i++) {
 						if (numbers[i][j] == 0) {
-							// Xóa số 0
+							// XÃ³a sá»‘ 0
 							for (int k = i + 1; k < numbers.length; k++) {
 								numbers[k - 1][j] = numbers[k][j];
 								if (numbers[k][j] != 0) {
@@ -114,16 +119,16 @@ public class Games2048 extends JFrame {
 								}
 
 							}
-							// Thêm số 0 vào cuối mảng
+							// ThÃªm sá»‘ 0 vÃ o cuá»‘i máº£ng
 							numbers[3][j] = 0;
-							// giữ nguyên vị trí
+							// giá»¯ nguyÃªn vá»‹ trÃ­
 							i--;
-							// Đếm số 0
+							// Ä�áº¿m sá»‘ 0
 							dem++;
 							isMoved = true;
 						}
 					}
-					// B2: Ghép 2 ô cạnh nhau
+					// B2: GhÃ©p 2 Ã´ cáº¡nh nhau
 					for (int i = 0; i < numbers.length - 1; i++) {
 						if (numbers[i][j] != 0 && numbers[i][j] == numbers[i + 1][j]) {
 							numbers[i][j] += numbers[i + 1][j];
@@ -131,7 +136,7 @@ public class Games2048 extends JFrame {
 							score += numbers[i][j];
 						}
 					}
-					// B3: Dồn lần 2
+					// B3: Dá»“n láº§n 2
 					dem = 0;
 					for (int i = 0; i < numbers.length - dem; i++) {
 						if (numbers[i][j] == 0) {
@@ -159,12 +164,12 @@ public class Games2048 extends JFrame {
 			private void slideDown() {
 				boolean isMoved = false;
 				for (int j = 0; j < numbers[0].length; j++) {
-					// B1:Dồn lần 1
+					// B1:Dá»“n láº§n 1
 					int dem = 0;
 					for (int i = numbers.length - 1; i > dem; i--) {
 
 						if (numbers[i][j] == 0) {
-							// Xóa số 0
+							// XÃ³a sá»‘ 0
 
 							for (int k = i - 1; k >= 0; k--) {
 								numbers[k + 1][j] = numbers[k][j];
@@ -173,16 +178,16 @@ public class Games2048 extends JFrame {
 								}
 
 							}
-							// Thêm số 0 vào đầu mảng
+							// ThÃªm sá»‘ 0 vÃ o Ä‘áº§u máº£ng
 							numbers[0][j] = 0;
-							// Giữ nguyên vị trí
+							// Giá»¯ nguyÃªn vá»‹ trÃ­
 							i++;
-							// Đếm số 0
+							// Ä�áº¿m sá»‘ 0
 							dem++;
 
 						}
 					}
-					// B2: Ghép 2 ô cạnh nhau
+					// B2: GhÃ©p 2 Ã´ cáº¡nh nhau
 					for (int i = numbers.length - 1; i > 0; i--) {
 						if (numbers[i][j] != 0 && numbers[i][j] == numbers[i - 1][j]) {
 							numbers[i][j] += numbers[i - 1][j];
@@ -191,7 +196,7 @@ public class Games2048 extends JFrame {
 							isMoved = true;
 						}
 					}
-					// B3: Dồn lần 2
+					// B3: Dá»“n láº§n 2
 					dem = 0;
 					for (int i = numbers.length - 1; i > dem; i--) {
 						if (numbers[i][j] == 0) {
@@ -219,24 +224,24 @@ public class Games2048 extends JFrame {
 			private void slideRight() {
 				boolean isMoved = false;
 				for (int i = 0; i < numbers.length; i++) {
-					// B1: Dồn lần 1
+					// B1: Dá»“n láº§n 1
 					int dem = 0;
 					for (int j = numbers[i].length - 1; j > dem; j--) {
 						if (numbers[i][j] == 0) {
-							// Xóa số 0
+							// XÃ³a sá»‘ 0
 							for (int k = j - 1; k >= 0; k--) {
 								numbers[i][k + 1] = numbers[i][k];
 								if (numbers[i][j] != 0) {
 									isMoved = true;
 								}
 							}
-							// Thêm số 0 vào đầu mảng
+							// ThÃªm sá»‘ 0 vÃ o Ä‘áº§u máº£ng
 							numbers[i][0] = 0;
 							j++;
 							dem++;
 						}
 					}
-					// B2: Ghép 2 ô cạnh nhau
+					// B2: GhÃ©p 2 Ã´ cáº¡nh nhau
 					for (int j = numbers[i].length - 1; j > 0; j--) {
 						if (numbers[i][j] != 0 && numbers[i][j] == numbers[i][j - 1]) {
 							numbers[i][j] = numbers[i][j] + numbers[i][j - 1];
@@ -244,7 +249,7 @@ public class Games2048 extends JFrame {
 							score += numbers[i][j];
 						}
 					}
-					// B3: Dồn lần 2
+					// B3: Dá»“n láº§n 2
 					dem = 0;
 					for (int j = numbers[i].length - 1; j > dem; j--) {
 						if (numbers[i][j] == 0) {
@@ -269,26 +274,26 @@ public class Games2048 extends JFrame {
 			private void slideLeft() {
 				boolean isMoved = false;
 				for (int i = 0; i < numbers.length; i++) {
-					// B1: Dồn lần 1
+					// B1: Dá»“n láº§n 1
 					int dem = 0;
 					for (int j = 0; j < numbers[i].length - dem; j++) {
 
 						if (numbers[i][j] == 0) {
-							// Xóa số 0
+							// XÃ³a sá»‘ 0
 							for (int k = j + 1; k < numbers[i].length; k++) {
 								numbers[i][k - 1] = numbers[i][k];
 								if (numbers[k][j] != 0) {
 									isMoved = true;
 								}
 							}
-							// Thêm số 0 vào cuối mảng
+							// ThÃªm sá»‘ 0 vÃ o cuá»‘i máº£ng
 							numbers[i][3] = 0;
-							// Giữ nguyên vị trí
+							// Giá»¯ nguyÃªn vá»‹ trÃ­
 							j--;
 							dem++;
 						}
 					}
-					// B2: Ghép 2 ô cạnh nhau
+					// B2: GhÃ©p 2 Ã´ cáº¡nh nhau
 					for (int j = 0; j < numbers[i].length - 1; j++) {
 						if (numbers[i][j] != 0 && numbers[i][j] == numbers[i][j + 1]) {
 							numbers[i][j] = numbers[i][j] + numbers[i][j + 1];
@@ -297,7 +302,7 @@ public class Games2048 extends JFrame {
 						}
 					}
 
-					// B3: Dồn lần 2
+					// B3: Dá»“n láº§n 2
 					dem = 0;
 					for (int j = 0; j < numbers[i].length - dem; j++) {
 						if (numbers[i][j] == 0) {
@@ -354,7 +359,7 @@ public class Games2048 extends JFrame {
 		lblScore.setText(String.valueOf(score));
 	}
 
-	// Tạo 2 số 2 ở vị trí ngẫu nhiên
+	// Táº¡o 2 sá»‘ 2 á»Ÿ vá»‹ trÃ­ ngáº«u nhiÃªn
 	public void newNumber() {
 		int r;
 		int c;
