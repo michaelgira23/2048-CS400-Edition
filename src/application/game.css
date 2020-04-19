@@ -7,3 +7,11 @@
 	-fx-font-family: 'Inconsolata';
 	-fx-font-size: 14;
 }
+
+.instructions-text {
+	-fx-text-fill: #4D4C7D;
+}
+
+.instructions-bold {
+	-fx-font-weight: bold;
+}

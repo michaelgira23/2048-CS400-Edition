@@ -8,9 +8,11 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
 /**
@@ -102,15 +104,69 @@ public class Main extends Application {
 		gameLayout.setCenter(theme.render(game));
 
 		// Game instructions on the bottom
-		HBox instructions = new HBox();
+		TextFlow instructions = new TextFlow();
 		instructions.setId("instructions");
-		instructions.setAlignment(Pos.CENTER);
-		instructions.getChildren().add(new Label("use the arrows keys or WASD to move the board"));
-		gameLayout.setBottom(instructions);
+
+		// Add various instructions with regular and bold text
+		Label text1 = new Label("use the ");
+		text1.getStyleClass().add("instructions-text");
+		Label text2 = new Label("arrow keys");
+		text2.getStyleClass().addAll("instructions-text", "instructions-bold");
+		Label text3 = new Label(" or ");
+		text3.getStyleClass().add("instructions-text");
+		Label text4 = new Label("WASDF");
+		text4.getStyleClass().addAll("instructions-text", "instructions-bold");
+		Label text5 = new Label(" to move the board");
+		text5.getStyleClass().add("instructions-text");
+
+		instructions.getChildren().addAll(text1, text2, text3, text4, text5);
+
+		HBox footer = new HBox();
+		footer.setAlignment(Pos.CENTER);
+		footer.getChildren().add(instructions);
+
+		gameLayout.setBottom(footer);
 
 		Scene gameScene = new Scene(gameLayout, WINDOW_WIDTH, WINDOW_HEIGHT);
 		gameScene.getStylesheets().addAll("application/application.css", "application/game.css");
+
+		gameScene.addEventFilter(KeyEvent.KEY_PRESSED, e -> handleKeyPress(e));
+
 		primaryStage.setScene(gameScene);
+	}
+
+	/**
+	 * Handle a key press for the game
+	 * 
+	 * @param event KeyEvent associated with the key press
+	 */
+	private void handleKeyPress(KeyEvent event) {
+
+		Direction direction;
+
+		switch (event.getCode()) {
+		case UP:
+		case W:
+			direction = Direction.Up;
+			break;
+		case RIGHT:
+		case D:
+			direction = Direction.Right;
+			break;
+		case DOWN:
+		case S:
+			direction = Direction.Down;
+			break;
+		case LEFT:
+		case A:
+			direction = Direction.Left;
+			break;
+		default:
+			direction = null;
+			break;
+		}
+
+		System.out.println("slide direction: " + direction);
 	}
 
 	/**
