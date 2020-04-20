@@ -6,7 +6,7 @@ import java.util.Random;
 /**
  * A single tile on the game board initialized with a value of 2
  * 
- * @author Hanyuan Wu, Michael Gira
+ * @author Hanyuan Wu, Michael Gira, Faith
  *
  */
 public class GameSquare {
