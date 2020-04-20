@@ -3,6 +3,8 @@ package application;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Keeps track of the internal game state
@@ -10,6 +12,7 @@ import java.util.Random;
  * @author Hanyuan Wu, Michael Gira
  *
  */
+
 public class Game {
 	static final boolean DEBUG = true;
 
@@ -59,6 +62,7 @@ public class Game {
 			}
 		}
 	}
+
 
 	private void checkGameOver(){
 		isGameOver = true;
@@ -126,6 +130,7 @@ public class Game {
 					numOfSquare--;
 				}
 			}
+
 		}
 		return slides;
 	}
@@ -255,5 +260,18 @@ public class Game {
 	 * @return A 2D array of the game state
 	 */
 	public GameSquare[][] getBoard() { return board; }
+
+	public void print() {
+		for (int r = 0; r < HEIGHT; r++) {
+			for (int c = 0; c < WIDTH; c++) {
+				if (board[r][c] == null) {
+					System.out.print("/");
+				} else {
+					System.out.print(board[r][c].getValue());
+				}
+			}
+			System.out.println();
+		}
+	}
 
 }

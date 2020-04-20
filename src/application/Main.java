@@ -27,6 +27,7 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
+
 	private static final boolean DEBUG = true;
 
 	private static final int WINDOW_WIDTH = 600;
