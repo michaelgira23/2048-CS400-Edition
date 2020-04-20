@@ -8,6 +8,8 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -23,8 +25,8 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-	private static final int WINDOW_WIDTH = 800;
-	private static final int WINDOW_HEIGHT = 600;
+	private static final int WINDOW_WIDTH = 600;
+	private static final int WINDOW_HEIGHT = 700;
 	private static final String APP_TITLE = "2048: CS400 Edition";
 
 	private List<String> args;
@@ -65,14 +67,21 @@ public class Main extends Application {
 	private void renderMenu() {
 
 		// Action buttons
-		Button playButton = new Button("Play");
+		ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/play-icon.png")));
+		playIcon.setPreserveRatio(true);
+		playIcon.setFitWidth(22);
+		
+		Button playButton = new Button("", playIcon);
 		playButton.setId("play");
+		
 		playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
 
 		// Stack game title above and action buttons below
 		VBox gameMenu = new VBox();
 		gameMenu.setAlignment(Pos.CENTER);
 		gameMenu.getChildren().addAll(getGameHeader(true), playButton);
+		
+		gameMenu.setSpacing(20);
 
 		// Entire page layout
 		BorderPane menuLayout = new BorderPane();
