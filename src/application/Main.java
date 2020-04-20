@@ -1,6 +1,8 @@
 package application;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -42,9 +44,6 @@ public class Main extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		args = this.getParameters().getRaw();
 		System.out.println("Args: " + args);
-
-		// Load Insolata font
-//		Font.loadFont(getClass().getResource("application/fonts/Inconsolata-Regular.ttf").toExternalForm());
 
 		this.primaryStage = primaryStage;
 		primaryStage.setTitle(APP_TITLE);
@@ -104,9 +103,16 @@ public class Main extends Application {
 		Button menuButton = new Button("Menu");
 		menuButton.setOnAction(e -> renderMenu());
 
+		Button leaderboardButton = new Button("Leaderboard");
+		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
+
+		HBox actionButtons = new HBox();
+		actionButtons.setAlignment(Pos.CENTER);
+		actionButtons.getChildren().addAll(menuButton, leaderboardButton);
+
 		VBox gameHeader = new VBox();
 		gameHeader.setAlignment(Pos.CENTER);
-		gameHeader.getChildren().addAll(getGameHeader(false), menuButton);
+		gameHeader.getChildren().addAll(getGameHeader(false), actionButtons);
 		gameLayout.setTop(gameHeader);
 
 		// Game rendered with theme in the center
@@ -177,6 +183,68 @@ public class Main extends Application {
 
 		System.out.println("slide direction: " + direction);
 		game.slide(direction);
+	}
+
+	/**
+	 * On the primary stage, display leaderboard of high scores
+	 * 
+	 * @param inputScore Whether to display form for inputting user score;
+	 *                   otherwise, just display existing scores.
+	 */
+	private void renderLeaderboard(boolean inputScore) {
+
+		// Center layout
+		VBox centerLayout = new VBox();
+		centerLayout.setAlignment(Pos.CENTER);
+
+		// "Game Over" header
+		Label gameOver = new Label("Game Over");
+		centerLayout.getChildren().add(gameOver);
+
+		// Possibly display user's score
+		if (inputScore) {
+			Label scoreLabel = new Label("Score");
+			Label scoreValue = new Label(String.valueOf(game.getScore()));
+
+			HBox scoreDisplay = new HBox();
+			scoreDisplay.getChildren().addAll(scoreLabel, scoreValue);
+			centerLayout.getChildren().add(scoreDisplay);
+		}
+
+		// "Play Again" button
+		if (inputScore) {
+			Button playAgain = new Button("Play Again");
+			playAgain.setOnAction(e -> renderGameWithTheme(currentTheme));
+			centerLayout.getChildren().add(playAgain);
+		}
+
+		// Top scores
+		Label topScoresLabel = new Label("Top Scores");
+		centerLayout.getChildren().add(topScoresLabel);
+
+		// Pretend high scores
+		Map<String, Integer> topScores = new LinkedHashMap<String, Integer>();
+		topScores.put("William Cong", 1194);
+		topScores.put("Faith Isaac", 1000);
+		topScores.put("Quan Nguyen", 870);
+		topScores.put("Hanyuan Wu", 512);
+		topScores.put("Michael Gira", 64);
+
+		VBox topScoresList = new VBox();
+		for (Map.Entry<String, Integer> entry : topScores.entrySet()) {
+			HBox row = new HBox();
+			row.getChildren().addAll(new Label(entry.getKey()), new Label(entry.getValue().toString()));
+			topScoresList.getChildren().add(row);
+		}
+		centerLayout.getChildren().add(topScoresList);
+
+		// Entire page layout
+		BorderPane menuLayout = new BorderPane();
+		menuLayout.setCenter(centerLayout);
+
+		Scene leaderboardScene = new Scene(menuLayout, WINDOW_WIDTH, WINDOW_HEIGHT);
+		leaderboardScene.getStylesheets().addAll("application/application.css", "application/leaderboard.css");
+		primaryStage.setScene(leaderboardScene);
 	}
 
 	/**
