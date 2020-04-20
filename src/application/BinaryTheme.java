@@ -40,7 +40,6 @@ public class BinaryTheme implements GameTheme {
 			ParallelTransition translations = new ParallelTransition();
 
 			for (SlideEvent slide : slides) {
-				System.out.println("Slide: " + slide);
 
 				// Get the node we're supposed to move
 				Node tile = getTileFromGrid(grid, slide.fromRow, slide.fromColumn);
@@ -51,6 +50,9 @@ public class BinaryTheme implements GameTheme {
 							+ slide.fromColumn + "). This should NEVER happen!!!");
 					continue;
 				}
+
+				// Make sure tile is in front of background nodes
+				tile.toFront();
 
 				Bounds tileBounds = tile.getBoundsInParent();
 
