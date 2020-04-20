@@ -1,13 +1,19 @@
 package application;
 
+import java.util.Objects;
+
 /**
  * A single tile on the game board initialized with a value of 1
  * 
- * @author Michael Gira
+ * @author Hanyuan Wu, Michael Gira
  *
  */
 public class GameSquare {
-	private int value = 1;
+	private int value;
+
+	public GameSquare(int value){
+		this.value = value;
+	}
 
 	/**
 	 * Double the game square's value (upon combining with another square)
@@ -26,5 +32,29 @@ public class GameSquare {
 	 */
 	public int getValue() {
 		return value;
+	}
+
+	/**
+	 * Set the square's current value
+	 *
+	 * @return The square's current value
+	 */
+	public void setValue(int value) {
+		this.value = value;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		GameSquare that = (GameSquare) o;
+		return value == that.value;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(value);
 	}
 }
