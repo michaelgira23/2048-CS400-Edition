@@ -1,5 +1,7 @@
 package application;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -17,6 +19,7 @@ public class Game {
 	private GameSquare[][] board;
 	private Random rnd;
 	private boolean isGameOver;
+	private SlideHandler slideHandler = null;
 
 	public Game(int seed) {
 		rnd = new Random(seed);
@@ -26,6 +29,16 @@ public class Game {
 		board = new GameSquare[HEIGHT][WIDTH];
 		squareGen();
 		squareGen();
+	}
+
+
+	/**
+	 * Set the handler for triggering animations once they have
+	 *
+	 * @param handler Handler which will receive all the new slide events
+	 */
+	public void setSlideHandler(SlideHandler handler) {
+		slideHandler = handler;
 	}
 
 
@@ -54,24 +67,29 @@ public class Game {
 	 * @param direction Direction to slide
 	 */
 	public void slide(Direction direction) {
-		GameSquare[][] shadowBoard = new GameSquare[HEIGHT][WIDTH];
+		List<SlideEvent> slides = new LinkedList<SlideEvent>();
 		switch (direction) {
 			case Up:
-				mergeUp();
+				slides = mergeUp();
 				break;
 			case Left:
-				mergeLeft();
+				slides = mergeLeft();
 				break;
-			case Bottom:
-				mergeBottom();
+			case Down:
+				slides = mergeDown();
 				break;
 			case Right:
-				mergeRight();
+				slides = mergeRight();
 				break;
 		}
+		if (slideHandler != null) {
+			slideHandler.handle(slides);
+		}
+		placeSquare();
 	}
 
-	private void mergeLeft() {
+	private List<SlideEvent> mergeLeft() {
+		List<SlideEvent> slides = new LinkedList<SlideEvent>();
 		for(int row = 0; row < HEIGHT; row++){
 			for(int col = 0; col < WIDTH; col++){
 				if(board[row][col] == null) continue;
@@ -80,51 +98,82 @@ public class Game {
 				for(j = col-1; j >= 0 && board[row][j] == null; j--);
 				board[row][col] = null;
 				board[row][j+1] = curSquare;
-				for(j = col+1; board[row][j] == null; j++);
+				int newCol = j+1;
+				slides.add(new SlideEvent(curSquare, SlideEventAction.None, row, col, row, newCol));
+				for(j = col+1; j < WIDTH && board[row][j] == null; j++);
+				if(j == WIDTH) continue;
 				if(board[row][j].equals(curSquare)){
+					GameSquare combinedWith = board[row][j];
+					slides.add(new SlideEvent(curSquare, SlideEventAction.CombineOver,
+							row, newCol, row, newCol));
+					slides.add(new SlideEvent(combinedWith, SlideEventAction.CombineUnder,
+							row, j, row, newCol));
 					curSquare.increment();
 					board[row][j] = null;
 				}
 			}
 		}
+		return slides;
 	}
 
-	private void mergeBottom() {
+	private List<SlideEvent> mergeDown() {
+		List<SlideEvent> slides = new LinkedList<SlideEvent>();
 		for(int col = WIDTH-1; col >= 0; col--){
 			for(int row = HEIGHT-1; row >= 0 ; row--){
 				if(board[row][col] == null) continue;
 				GameSquare curSquare = board[row][col];
 				int i;
-				for(i = row+1;i < HEIGHT && board[i][col] == null; i++);
+				for(i = row+1; i < HEIGHT && board[i][col] == null; i++);
 				board[row][col] = null;
 				board[i-1][col] = curSquare;
-				for(i = row-1; board[i][col] == null; i--);
+				int newRow = i-1;
+				slides.add(new SlideEvent(curSquare, SlideEventAction.None, row, col, newRow, col));
+				for(i = row-1; i >= 0 && board[i][col] == null; i--);
+				if(i == -1) continue;
 				if(board[i][col].equals(curSquare)){
+					GameSquare combinedWith = board[i][col];
+					slides.add(new SlideEvent(curSquare, SlideEventAction.CombineOver,
+							newRow, col, newRow, col));
+					slides.add(new SlideEvent(combinedWith, SlideEventAction.CombineUnder,
+							i, col, newRow, col));
 					curSquare.increment();
 					board[i][col] = null;
 				}
 			}
 		}
+		return slides;
 	}
 
-	private void mergeUp() {
+	private List<SlideEvent> mergeUp() {
+		List<SlideEvent> slides = new LinkedList<SlideEvent>();
 		for(int col = 0; col < WIDTH; col++){
-			for(int row = 0; row < WIDTH ; row++){
+			for(int row = 0; row < HEIGHT; row++){
 				if(board[row][col] == null) continue;
 				GameSquare curSquare = board[row][col];
 				int i;
 				for(i = row-1;i >= 0 && board[i][col] == null; i--);
 				board[row][col] = null;
 				board[i+1][col] = curSquare;
-				for(i = row+1; board[i][col] == null; i++);
+				int newRow = i+1;
+				slides.add(new SlideEvent(curSquare, SlideEventAction.None, row, col, newRow, col));
+				for(i = row+1; i < WIDTH && board[i][col] == null; i++);
+				if(i == WIDTH) continue;
 				if(board[i][col].equals(curSquare)){
+					GameSquare combinedWith = board[i][col];
+					slides.add(new SlideEvent(curSquare, SlideEventAction.CombineOver,
+							newRow, col, newRow, col));
+					slides.add(new SlideEvent(combinedWith, SlideEventAction.CombineUnder,
+							i, col, newRow, col));
 					curSquare.increment();
 					board[i][col] = null;
 				}
 			}
 		}
+		return slides;
 	}
-	private void mergeRight() {
+
+	private List<SlideEvent> mergeRight() {
+		List<SlideEvent> slides = new LinkedList<SlideEvent>();
 		for(int row = HEIGHT-1; row >= 0 ; row--){
 			for(int col = WIDTH-1; col >= 0; col--){
 				if(board[row][col] == null) continue;
@@ -133,13 +182,22 @@ public class Game {
 				for(j = col+1;j < HEIGHT && board[row][j] == null; j++);
 				board[row][col] = null;
 				board[row][j-1] = curSquare;
-				for(j = col-1; board[row][j] == null; j--);
+				int newCol = j-1;
+				slides.add(new SlideEvent(curSquare, SlideEventAction.None, row, col, row, newCol));
+				for(j = col-1; j >= 0 && board[row][j] == null; j--);
+				if(j == -1) continue;
 				if(board[row][j].equals(curSquare)){
+					GameSquare combinedWith = board[row][j];
+					slides.add(new SlideEvent(curSquare, SlideEventAction.CombineOver,
+							row, newCol, row, newCol));
+					slides.add(new SlideEvent(combinedWith, SlideEventAction.CombineUnder,
+							row, j, row, newCol));
 					curSquare.increment();
 					board[row][j] = null;
 				}
 			}
 		}
+		return slides;
 	}
 
 

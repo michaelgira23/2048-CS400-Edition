@@ -34,7 +34,7 @@ public class Main extends Application {
 	private List<String> args;
 	private Stage primaryStage;
 
-	private Game game = new Game();
+	private Game game = new Game(2);
 	private GameTheme currentTheme = new BinaryTheme();
 
 	/**
