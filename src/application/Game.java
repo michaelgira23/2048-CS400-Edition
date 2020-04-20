@@ -1,5 +1,8 @@
 package application;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Keeps track of the internal game state
  * 
@@ -49,14 +52,16 @@ public class Game {
 	/**
 	 * Helper method when GameSquares slide up
 	 */
-	public void slideUpHelp() {
-		GameSquare tempGS = new GameSquare();
+	public List<SlideEvent> slideUpHelp() {
+		List<SlideEvent> slides = new LinkedList<SlideEvent>();
+		GameSquare tempGS;
 		for (int r = 0; r < HEIGHT; r++) {
 			for (int c = 0; c < WIDTH; c++) {
 				// if the slot has a gamesquare
 				if (board[r][c] != null) {
 					tempGS = board[r][c];
 					int tempR = r;
+					boolean moved = false;
 					boolean repeat = true;
 					if (tempR != 0 && board[tempR - 1][c] == null) {
 						// while it's not row 0 and there's no gamesquare above it keep moving the
@@ -72,24 +77,55 @@ public class Game {
 								repeat = false;
 							}
 						}
+
+						slides.add(new SlideEvent(tempGS, SlideEventAction.None, r, c, tempR, c));
+						moved = true;
 					}
 					// if theres a gamesquare above it (aka tempR is not 0) check if combo is
 					// possible
 					if (tempR != 0 && board[tempR - 1][c].getComb() == false) {
 						if (board[tempR][c].getValue() == board[tempR - 1][c].getValue()) {
-							board[tempR][c] = null;
+
+							// Change current slide event for tile
+							SlideEvent slideOverEvent = new SlideEvent(tempGS, SlideEventAction.CombineOver, r, c,
+									tempR - 1, c);
+							if (moved) {
+								slides.set(slides.size() - 1, slideOverEvent);
+							} else {
+								slides.add(slideOverEvent);
+							}
+
+							// Edit any slide event with the square we're sliding over
+							GameSquare combinedWith = board[tempR - 1][c];
+							boolean existing = false;
+							for (SlideEvent slide : slides) {
+								if (slide.tile.equals(combinedWith)) {
+									slide.action = SlideEventAction.CombineUnder;
+									existing = true;
+								}
+							}
+
+							// If no preexisting slide event for what we're sliding over, create our own
+							if (!existing) {
+								slides.add(new SlideEvent(combinedWith, SlideEventAction.CombineUnder, tempR - 1, c,
+										tempR - 1, c));
+							}
+
+							board[tempR - 1][c] = board[tempR][c];
 							board[tempR - 1][c].increment();
 							board[tempR - 1][c].setComb(true);
+							board[tempR][c] = null;
 						}
 					}
 				}
 			}
 		}
 		resetCombineStatus();
+		return slides;
 	}
 
 	public void slideDownHelp() {
-		GameSquare tempGS = new GameSquare();
+		GameSquare tempGS;
 		for (int r = 3; r >= 0; r--) {
 			for (int c = 0; c < WIDTH; c++) {
 				// if the slot has a gamesquare
@@ -127,7 +163,7 @@ public class Game {
 	}
 
 	public void slideLeftHelp() {
-		GameSquare tempGS = new GameSquare();
+		GameSquare tempGS;
 		for (int r = 0; r < HEIGHT; r++) {
 			for (int c = 0; c < WIDTH; c++) {
 				// if the slot has a gamesquare
@@ -165,7 +201,7 @@ public class Game {
 	}
 
 	public void slideRightHelp() {
-		GameSquare tempGS = new GameSquare();
+		GameSquare tempGS;
 		for (int r = 0; r < HEIGHT; r++) {
 			for (int c = 3; c >= 0; c--) {
 				// if the slot has a gamesquare
@@ -208,8 +244,11 @@ public class Game {
 	 * @param direction Direction to slide
 	 */
 	public void slide(Direction direction) {
+
+		List<SlideEvent> slides = new LinkedList<SlideEvent>();
+
 		if (direction == Direction.Up) {
-			slideUpHelp();
+			slides = slideUpHelp();
 		}
 		if (direction == Direction.Down) {
 			slideDownHelp();
@@ -222,9 +261,9 @@ public class Game {
 		}
 
 		// Mimic slide events for now
-		SlideEvent[] slides = { new SlideEvent(board[2][3], SlideEventAction.CombineOver, 2, 3, 2, 0),
-				new SlideEvent(board[2][2], SlideEventAction.CombineUnder, 2, 2, 2, 0),
-				new SlideEvent(board[1][2], SlideEventAction.None, 1, 2, 1, 0) };
+//		SlideEvent[] slides = { new SlideEvent(board[2][3], SlideEventAction.CombineOver, 2, 3, 2, 0),
+//				new SlideEvent(board[2][2], SlideEventAction.CombineUnder, 2, 2, 2, 0),
+//				new SlideEvent(board[1][2], SlideEventAction.None, 1, 2, 1, 0) };
 
 		// Reflect these changes into the GUI interface
 		if (slideHandler != null) {

@@ -36,4 +36,28 @@ public class SlideEvent {
 		this.toRow = toRow;
 		this.toColumn = toColumn;
 	}
+
+	/**
+	 * Two slide events are equal if they have the same tile reference
+	 * 
+	 * @return Whether the slide events have the same tile
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof SlideEvent) {
+			return tile.equals(((SlideEvent) other).tile);
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Return the hash code of the tile
+	 * 
+	 * @return Hash code of the tile
+	 */
+	@Override
+	public int hashCode() {
+		return tile.hashCode();
+	}
 }
