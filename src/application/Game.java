@@ -11,6 +11,7 @@ import java.util.Random;
  *
  */
 public class Game {
+	static final boolean DEBUG = true;
 
 	static final int HEIGHT = 4;
 	static final int WIDTH = 4;
@@ -20,9 +21,11 @@ public class Game {
 	private Random rnd;
 	private boolean isGameOver;
 	private SlideHandler slideHandler = null;
+	private boolean moved;
 
 	public Game(int seed) {
-		rnd = new Random(seed);
+		if(seed == 0) rnd = new Random();
+		else rnd = new Random(seed);
 		score = 0;
 		numOfSquare = 0;
 		isGameOver = false;
@@ -31,19 +34,15 @@ public class Game {
 		squareGen();
 	}
 
-
 	/**
 	 * Set the handler for triggering animations once they have
 	 *
 	 * @param handler Handler which will receive all the new slide events
 	 */
-	public void setSlideHandler(SlideHandler handler) {
-		slideHandler = handler;
-	}
-
+	public void setSlideHandler(SlideHandler handler) { slideHandler = handler; }
 
 	private boolean squareGen() {
-		// check full
+		// This should never happen! (Prepared for possible GUI bug)
 		if(numOfSquare == HEIGHT*WIDTH) return false;
 		int value = 2;
 		if(rnd.nextBoolean()) {
@@ -55,9 +54,24 @@ public class Game {
 			if (board[x][y] == null){
 				board[x][y] = new GameSquare(value);
 				numOfSquare++;
+				if(numOfSquare == HEIGHT*WIDTH) checkGameOver();
 				return true;
 			}
 		}
+	}
+
+	private void checkGameOver(){
+		isGameOver = true;
+		for(int row = 0; row < HEIGHT; row++){
+			for(int col = 0; col < WIDTH; col++){
+				if(row < HEIGHT-1 && board[row][col].equals(board[row+1][col])) isGameOver = false;
+				if(row > 0 && board[row][col].equals(board[row-1][col])) isGameOver = false;
+				if(col < WIDTH-1 && board[row][col].equals(board[row][col+1])) isGameOver = false;
+				if(col > 0 && board[row][col].equals(board[row][col-1])) isGameOver = false;
+			}
+		}
+		// DEBUG
+		if(isGameOver && DEBUG) System.out.println("Game Over!");
 	}
 
 	/**
@@ -67,25 +81,21 @@ public class Game {
 	 * @param direction Direction to slide
 	 */
 	public void slide(Direction direction) {
+		// check if any square actually moved
+		moved = false;
 		List<SlideEvent> slides = new LinkedList<SlideEvent>();
 		switch (direction) {
-			case Up:
-				slides = mergeUp();
+			case Up: slides = mergeUp();
 				break;
-			case Left:
-				slides = mergeLeft();
+			case Left: slides = mergeLeft();
 				break;
-			case Down:
-				slides = mergeDown();
+			case Down: slides = mergeDown();
 				break;
-			case Right:
-				slides = mergeRight();
+			case Right: slides = mergeRight();
 				break;
 		}
-		if (slideHandler != null) {
-			slideHandler.handle(slides);
-		}
-		placeSquare();
+		if (slideHandler != null) slideHandler.handle(slides);
+		if(moved) squareGen();
 	}
 
 	private List<SlideEvent> mergeLeft() {
@@ -99,6 +109,7 @@ public class Game {
 				board[row][col] = null;
 				board[row][j+1] = curSquare;
 				int newCol = j+1;
+				if(newCol != col) moved = true;
 				slides.add(new SlideEvent(curSquare, SlideEventAction.None, row, col, row, newCol));
 				for(j = col+1; j < WIDTH && board[row][j] == null; j++);
 				if(j == WIDTH) continue;
@@ -109,7 +120,10 @@ public class Game {
 					slides.add(new SlideEvent(combinedWith, SlideEventAction.CombineUnder,
 							row, j, row, newCol));
 					curSquare.increment();
+					score += curSquare.getValue();
 					board[row][j] = null;
+					moved = true;
+					numOfSquare--;
 				}
 			}
 		}
@@ -127,6 +141,7 @@ public class Game {
 				board[row][col] = null;
 				board[i-1][col] = curSquare;
 				int newRow = i-1;
+				if(newRow != row) moved = true;
 				slides.add(new SlideEvent(curSquare, SlideEventAction.None, row, col, newRow, col));
 				for(i = row-1; i >= 0 && board[i][col] == null; i--);
 				if(i == -1) continue;
@@ -137,7 +152,10 @@ public class Game {
 					slides.add(new SlideEvent(combinedWith, SlideEventAction.CombineUnder,
 							i, col, newRow, col));
 					curSquare.increment();
+					score += curSquare.getValue();
 					board[i][col] = null;
+					moved = true;
+					numOfSquare--;
 				}
 			}
 		}
@@ -155,6 +173,7 @@ public class Game {
 				board[row][col] = null;
 				board[i+1][col] = curSquare;
 				int newRow = i+1;
+				if(newRow != row) moved = true;
 				slides.add(new SlideEvent(curSquare, SlideEventAction.None, row, col, newRow, col));
 				for(i = row+1; i < WIDTH && board[i][col] == null; i++);
 				if(i == WIDTH) continue;
@@ -165,7 +184,10 @@ public class Game {
 					slides.add(new SlideEvent(combinedWith, SlideEventAction.CombineUnder,
 							i, col, newRow, col));
 					curSquare.increment();
+					score += curSquare.getValue();
 					board[i][col] = null;
+					moved = true;
+					numOfSquare--;
 				}
 			}
 		}
@@ -183,6 +205,7 @@ public class Game {
 				board[row][col] = null;
 				board[row][j-1] = curSquare;
 				int newCol = j-1;
+				if(newCol != col) moved = true;
 				slides.add(new SlideEvent(curSquare, SlideEventAction.None, row, col, row, newCol));
 				for(j = col-1; j >= 0 && board[row][j] == null; j--);
 				if(j == -1) continue;
@@ -193,7 +216,10 @@ public class Game {
 					slides.add(new SlideEvent(combinedWith, SlideEventAction.CombineUnder,
 							row, j, row, newCol));
 					curSquare.increment();
+					score += curSquare.getValue();
 					board[row][j] = null;
+					moved = true;
+					numOfSquare--;
 				}
 			}
 		}
@@ -203,37 +229,31 @@ public class Game {
 
 	/**
 	 * Place a square on a particular side of the playing board
-	 *
+	 * This may be public, if needed, just modify the signature
+	 * In fact squareGen will never return false in normal cases.
+	 * This is prepared for possible GUI bugs
 	 */
-	public void placeSquare() {
-		if(!squareGen()) isGameOver = true;
-	}
+	private void placeSquare() { if(!squareGen()) isGameOver = true; }
 
 	/**
 	 * Indicates whether the game is over and the player can no longer move
 	 * 
 	 * @return Whether the game is over
 	 */
-	public boolean isGameOver() {
-		return isGameOver;
-	}
+	public boolean isGameOver() { return isGameOver; }
 
 	/**
 	 * Get the player's current score
 	 * 
 	 * @return Current score
 	 */
-	public int getScore() {
-		return score;
-	}
+	public int getScore() { return score; }
 
 	/**
 	 * Get the current game tile state
 	 * 
 	 * @return A 2D array of the game state
 	 */
-	public GameSquare[][] getBoard() {
-		return board;
-	}
+	public GameSquare[][] getBoard() { return board; }
 
 }

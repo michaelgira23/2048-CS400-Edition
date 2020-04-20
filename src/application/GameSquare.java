@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * A single tile on the game board initialized with a value of 1
  * 
- * @author Hanyuan Wu, Michael Gira
+ * @author Hanyuan Wu, Michael Gira, Faith
  *
  */
 public class GameSquare {
