@@ -15,6 +15,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
@@ -47,7 +49,8 @@ public class Main extends Application {
 
 		this.primaryStage = primaryStage;
 		primaryStage.setTitle(APP_TITLE);
-		renderMenu();
+//		renderMenu();
+		renderLeaderboard(true);
 		primaryStage.show();
 	}
 
@@ -160,25 +163,25 @@ public class Main extends Application {
 		Direction direction;
 
 		switch (event.getCode()) {
-		case UP:
-		case W:
-			direction = Direction.Up;
-			break;
-		case RIGHT:
-		case D:
-			direction = Direction.Right;
-			break;
-		case DOWN:
-		case S:
-			direction = Direction.Down;
-			break;
-		case LEFT:
-		case A:
-			direction = Direction.Left;
-			break;
-		default:
-			direction = null;
-			break;
+			case UP:
+			case W:
+				direction = Direction.Up;
+				break;
+			case RIGHT:
+			case D:
+				direction = Direction.Right;
+				break;
+			case DOWN:
+			case S:
+				direction = Direction.Down;
+				break;
+			case LEFT:
+			case A:
+				direction = Direction.Left;
+				break;
+			default:
+				direction = null;
+				break;
 		}
 
 		System.out.println("slide direction: " + direction);
@@ -195,32 +198,45 @@ public class Main extends Application {
 
 		// Center layout
 		VBox centerLayout = new VBox();
-		centerLayout.setAlignment(Pos.CENTER);
+		centerLayout.setId("center-layout");
+		centerLayout.setAlignment(Pos.TOP_CENTER);
 
 		// "Game Over" header
 		Label gameOver = new Label("Game Over");
+		gameOver.setId("game-over");
 		centerLayout.getChildren().add(gameOver);
 
 		// Possibly display user's score
 		if (inputScore) {
-			Label scoreLabel = new Label("Score");
-			Label scoreValue = new Label(String.valueOf(game.getScore()));
+			Label scoreLabel = new Label("Your Score");
+			scoreLabel.setId("score-label");
 
-			HBox scoreDisplay = new HBox();
-			scoreDisplay.getChildren().addAll(scoreLabel, scoreValue);
-			centerLayout.getChildren().add(scoreDisplay);
+			Label scoreValue = new Label(String.valueOf(game.getScore()));
+			scoreValue.setId("score-value");
+
+			// Filler element for spacing out other elements in an HBox
+			Region spacer = new Region();
+			HBox.setHgrow(spacer, Priority.ALWAYS);
+
+			HBox scoreContainer = new HBox();
+			scoreContainer.setId("score-container");
+			scoreContainer.setAlignment(Pos.BASELINE_CENTER);
+			scoreContainer.getChildren().addAll(scoreLabel, spacer, scoreValue);
+			centerLayout.getChildren().add(scoreContainer);
 		}
 
 		// "Play Again" button
 		if (inputScore) {
 			Button playAgain = new Button("Play Again");
+			playAgain.setId("play-again");
 			playAgain.setOnAction(e -> renderGameWithTheme(currentTheme));
 			centerLayout.getChildren().add(playAgain);
 		}
 
 		// Top scores
-		Label topScoresLabel = new Label("Top Scores");
-		centerLayout.getChildren().add(topScoresLabel);
+		Label topScoresTitle = new Label("Top Scores");
+		topScoresTitle.setId("leaderboard-title");
+		centerLayout.getChildren().add(topScoresTitle);
 
 		// Pretend high scores
 		Map<String, Integer> topScores = new LinkedHashMap<String, Integer>();
@@ -232,8 +248,20 @@ public class Main extends Application {
 
 		VBox topScoresList = new VBox();
 		for (Map.Entry<String, Integer> entry : topScores.entrySet()) {
+
+			Label name = new Label(entry.getKey());
+			name.setId("leaderboard-name");
+
+			Label score = new Label(entry.getValue().toString());
+			score.setId("leaderboard-score");
+
+			// Filler element for spacing out other elements in an HBox
+			Region spacer = new Region();
+			HBox.setHgrow(spacer, Priority.ALWAYS);
+
 			HBox row = new HBox();
-			row.getChildren().addAll(new Label(entry.getKey()), new Label(entry.getValue().toString()));
+			row.setId("leaderboard-player");
+			row.getChildren().addAll(name, spacer, score);
 			topScoresList.getChildren().add(row);
 		}
 		centerLayout.getChildren().add(topScoresList);

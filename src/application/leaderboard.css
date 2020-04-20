@@ -1,0 +1,71 @@
+#center-layout {
+	-fx-max-width: 250;
+	-fx-padding: 50 0 50 0;
+}
+
+#game-over {
+	-fx-padding: 24 0 12 0;
+	-fx-text-fill: #363062;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-weight: bold;
+	-fx-font-size: 36;
+}
+
+#score-container {
+	-fx-padding: 0 0 48 0;
+}
+
+#score-label {
+	-fx-text-fill: #363062;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-weight: bold;
+	-fx-font-size: 14;
+}
+
+#score-value {
+	-fx-text-fill: #363062;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-size: 18;
+}
+
+#play-again {
+	-fx-padding: 12 24 12 24;
+	-fx-background-color: #4D4C7D;
+	-fx-background-radius: 5;
+	
+	-fx-text-fill: #FFF;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-weight: bold;
+	-fx-font-size: 14;
+	
+	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 20, 0, 0, 10);
+	-fx-cursor: hand;
+}
+
+#play-again:hover {
+	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 35, 0, 0, 10);
+}
+
+#play-again:pressed {
+	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 5);
+}
+
+#leaderboard-title {
+	-fx-padding: 48 0 0 12;
+	
+	-fx-text-fill: #4D4C7D;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-weight: bold;
+	-fx-font-size: 18;
+}
+
+#leaderboard-player {
+	-fx-padding: 12 0 12 0;
+}
+
+#leaderboard-name,
+#leaderboard-score {
+	-fx-text-fill: #363062;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-size: 14;
+}
