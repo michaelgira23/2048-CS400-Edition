@@ -1,24 +1,18 @@
 package application;
 
-import java.util.Random;
+import java.util.Objects;
 
 /**
- * A single tile on the game board initialized with a value of 2
+ * A single tile on the game board initialized with a value of 1
  * 
- * @author Michael Gira
+ * @author Hanyuan Wu, Michael Gira
  *
  */
 public class GameSquare {
+	private int value;
 
-	private int value = 2;
-	private int posX;
-	private int posY;
-	private boolean combined = false;
-
-	public GameSquare() {
-		Random ran = new Random();
-		posX = ran.nextInt(Game.WIDTH + 1);
-		posY = ran.nextInt(Game.HEIGHT + 1);
+	public GameSquare(int value){
+		this.value = value;
 	}
 
 	/**
@@ -40,24 +34,27 @@ public class GameSquare {
 		return value;
 	}
 
-	public void setPos(int x, int y) {
-		posX = x;
-		posY = y;
+	/**
+	 * Set the square's current value
+	 *
+	 * @return The square's current value
+	 */
+	public void setValue(int value) {
+		this.value = value;
 	}
 
-	public int getX() {
-		return posX;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		GameSquare that = (GameSquare) o;
+		return value == that.value;
 	}
 
-	public int getY() {
-		return posY;
-	}
-
-	public boolean getComb() {
-		return combined;
-	}
-
-	public void setComb(boolean status) {
-		combined = status;
+	@Override
+	public int hashCode() {
+		return Objects.hash(value);
 	}
 }
