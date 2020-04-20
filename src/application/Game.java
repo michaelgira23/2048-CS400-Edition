@@ -1,6 +1,8 @@
 package application;
 
 import java.util.Random;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Keeps track of the internal game state
@@ -8,6 +10,7 @@ import java.util.Random;
  * @author Hanyuan Wu, Michael Gira
  *
  */
+
 public class Game {
 
 	static final int HEIGHT = 4;
@@ -47,6 +50,328 @@ public class Game {
 		}
 	}
 
+	// Functional interface to call when new changes occur
+	private SlideHandler slideHandler = null;
+
+	public Game() {
+		board[2][3] = new GameSquare();
+		board[2][2] = new GameSquare();
+		board[1][2] = new GameSquare();
+		board[1][2].increment();
+		board[1][2].increment();
+		board[1][2].increment();
+		board[1][2].increment();
+	}
+
+	/**
+	 * Set the handler for triggering animations once they have
+	 * 
+	 * @param handler Handler which will receive all the new slide events
+	 */
+	public void setSlideHandler(SlideHandler handler) {
+		slideHandler = handler;
+	}
+
+	public void resetCombineStatus() {
+		for (int r = 0; r < HEIGHT; r++) {
+			for (int c = 0; c < WIDTH; c++) {
+				if (board[r][c] != null) {
+					board[r][c].setComb(false);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Helper method when GameSquares slide up
+	 */
+	public List<SlideEvent> slideUpHelp() {
+		List<SlideEvent> slides = new LinkedList<SlideEvent>();
+		GameSquare tempGS;
+		for (int r = 0; r < HEIGHT; r++) {
+			for (int c = 0; c < WIDTH; c++) {
+				// if the slot has a gamesquare
+				if (board[r][c] != null) {
+					tempGS = board[r][c];
+					int tempR = r;
+					boolean moved = false;
+					boolean repeat = true;
+					if (tempR != 0 && board[tempR - 1][c] == null) {
+						// while it's not row 0 and there's no gamesquare above it keep moving the
+						// gamesquare up
+						while (repeat == true) {
+							board[tempR - 1][c] = tempGS;
+							tempGS.setPos(c, tempR - 1);
+							board[tempR][c] = null;
+							tempR--;
+							if (tempR == 0) {
+								repeat = false;
+							} else if (board[tempR - 1][c] != null) {
+								repeat = false;
+							}
+						}
+
+						slides.add(new SlideEvent(tempGS, SlideEventAction.None, r, c, tempR, c));
+						moved = true;
+					}
+					// if theres a gamesquare above it (aka tempR is not 0) check if combo is
+					// possible
+					if (tempR != 0 && board[tempR - 1][c].getComb() == false) {
+						if (board[tempR][c].getValue() == board[tempR - 1][c].getValue()) {
+
+							// Change current slide event for tile
+							SlideEvent slideOverEvent = new SlideEvent(tempGS, SlideEventAction.CombineOver, r, c,
+									tempR - 1, c);
+							if (moved) {
+								slides.set(slides.size() - 1, slideOverEvent);
+							} else {
+								slides.add(slideOverEvent);
+							}
+
+							// Edit any slide event with the square we're sliding over
+							GameSquare combinedWith = board[tempR - 1][c];
+							boolean existing = false;
+							for (SlideEvent slide : slides) {
+								if (slide.tile.equals(combinedWith)) {
+									slide.action = SlideEventAction.CombineUnder;
+									existing = true;
+								}
+							}
+
+							// If no preexisting slide event for what we're sliding over, create our own
+							if (!existing) {
+								slides.add(new SlideEvent(combinedWith, SlideEventAction.CombineUnder, tempR - 1, c,
+										tempR - 1, c));
+							}
+
+							board[tempR - 1][c] = board[tempR][c];
+							board[tempR - 1][c].increment();
+							board[tempR - 1][c].setComb(true);
+							board[tempR][c] = null;
+						}
+					}
+				}
+			}
+		}
+		resetCombineStatus();
+		return slides;
+	}
+
+	public List<SlideEvent> slideDownHelp() {
+		List<SlideEvent> slides = new LinkedList<SlideEvent>();
+		GameSquare tempGS;
+		for (int r = 3; r >= 0; r--) {
+			for (int c = 0; c < WIDTH; c++) {
+				// if the slot has a gamesquare
+				if (board[r][c] != null) {
+					tempGS = board[r][c];
+					int tempR = r;
+					boolean moved = false;
+					boolean repeat = true;
+					if (tempR != 3 && board[tempR + 1][c] == null) {
+						// while it's not row 3 and there's no gamesquare below it keep moving the
+						// gamesquare down
+						while (repeat == true) {
+							board[tempR + 1][c] = tempGS;
+							tempGS.setPos(c, tempR + 1);
+							board[tempR][c] = null;
+							tempR++;
+							if (tempR == 3) {
+								repeat = false;
+							} else if (board[tempR + 1][c] != null) {
+								repeat = false;
+							}
+						}
+
+						slides.add(new SlideEvent(tempGS, SlideEventAction.None, r, c, tempR, c));
+						moved = true;
+					}
+					// if theres a gamesquare below it (aka tempR is not 3) check if combo is
+					// possible
+					if (tempR != 3 && board[tempR + 1][c].getComb() == false) {
+						if (board[tempR][c].getValue() == board[tempR + 1][c].getValue()) {
+
+							// Change current slide event for tile
+							SlideEvent slideOverEvent = new SlideEvent(tempGS, SlideEventAction.CombineOver, r, c,
+									tempR + 1, c);
+							if (moved) {
+								slides.set(slides.size() - 1, slideOverEvent);
+							} else {
+								slides.add(slideOverEvent);
+							}
+
+							// Edit any slide event with the square we're sliding over
+							GameSquare combinedWith = board[tempR + 1][c];
+							boolean existing = false;
+							for (SlideEvent slide : slides) {
+								if (slide.tile.equals(combinedWith)) {
+									slide.action = SlideEventAction.CombineUnder;
+									existing = true;
+								}
+							}
+
+							// If no preexisting slide event for what we're sliding over, create our own
+							if (!existing) {
+								slides.add(new SlideEvent(combinedWith, SlideEventAction.CombineUnder, tempR + 1, c,
+										tempR + 1, c));
+							}
+
+							board[tempR + 1][c] = board[tempR][c];
+							board[tempR + 1][c].increment();
+							board[tempR + 1][c].setComb(true);
+							board[tempR][c] = null;
+						}
+					}
+				}
+			}
+		}
+		resetCombineStatus();
+		return slides;
+	}
+
+	public List<SlideEvent> slideLeftHelp() {
+		List<SlideEvent> slides = new LinkedList<SlideEvent>();
+		GameSquare tempGS;
+		for (int r = 0; r < HEIGHT; r++) {
+			for (int c = 0; c < WIDTH; c++) {
+				// if the slot has a gamesquare
+				if (board[r][c] != null) {
+					tempGS = board[r][c];
+					int tempC = c;
+					boolean moved = false;
+					boolean repeat = true;
+					// while it's not col 0 and there's no gamesquare to the left of it keep moving
+					// the gamesquare left
+					if (tempC != 0 && board[r][tempC - 1] == null) {
+						while (repeat == true) {
+							board[r][tempC - 1] = tempGS;
+							tempGS.setPos(tempC - 1, r);
+							board[r][tempC] = null;
+							tempC--;
+							if (tempC == 0) {
+								repeat = false;
+							} else if (board[r][tempC - 1] != null) {
+								repeat = false;
+							}
+						}
+
+						slides.add(new SlideEvent(tempGS, SlideEventAction.None, r, c, r, tempC));
+						moved = true;
+					}
+					// if theres a gamesquare to the left of it (aka tempC is not 0) check if combo
+					// is possible
+					if (tempC != 0 && board[r][tempC - 1].getComb() == false) {
+						if (board[r][tempC - 1].getValue() == board[r][tempC].getValue()) {
+
+							// Change current slide event for tile
+							SlideEvent slideOverEvent = new SlideEvent(tempGS, SlideEventAction.CombineOver, r, c, r,
+									tempC - 1);
+							if (moved) {
+								slides.set(slides.size() - 1, slideOverEvent);
+							} else {
+								slides.add(slideOverEvent);
+							}
+
+							// Edit any slide event with the square we're sliding over
+							GameSquare combinedWith = board[r][tempC - 1];
+							boolean existing = false;
+							for (SlideEvent slide : slides) {
+								if (slide.tile.equals(combinedWith)) {
+									slide.action = SlideEventAction.CombineUnder;
+									existing = true;
+								}
+							}
+
+							// If no preexisting slide event for what we're sliding over, create our own
+							if (!existing) {
+								slides.add(new SlideEvent(combinedWith, SlideEventAction.CombineUnder, r, tempC - 1, r,
+										tempC - 1));
+							}
+
+							board[r][tempC - 1] = board[r][tempC];
+							board[r][tempC - 1].increment();
+							board[r][tempC - 1].setComb(true);
+							board[r][tempC] = null;
+						}
+					}
+				}
+			}
+		}
+		resetCombineStatus();
+		return slides;
+	}
+
+	public List<SlideEvent> slideRightHelp() {
+		List<SlideEvent> slides = new LinkedList<SlideEvent>();
+		GameSquare tempGS;
+		for (int r = 0; r < HEIGHT; r++) {
+			for (int c = 3; c >= 0; c--) {
+				// if the slot has a gamesquare
+				if (board[r][c] != null) {
+					tempGS = board[r][c];
+					int tempC = c;
+					boolean moved = false;
+					boolean repeat = true;
+					// while it's not col 3 and there's no gamesquare to the right of it keep moving
+					// the gamesquare right
+					if (tempC != 3 && board[r][tempC + 1] == null) {
+						while (repeat == true) {
+							board[r][tempC + 1] = tempGS;
+							tempGS.setPos(tempC + 1, r);
+							board[r][tempC] = null;
+							tempC++;
+							if (tempC == 3) {
+								repeat = false;
+							} else if (board[r][tempC + 1] != null) {
+								repeat = false;
+							}
+						}
+
+						slides.add(new SlideEvent(tempGS, SlideEventAction.None, r, c, r, tempC));
+						moved = true;
+					}
+					// if theres a gamesquare to the right of it (aka tempC is not 3)
+					if (tempC < 3 && board[r][tempC + 1].getComb() == false) {
+						if (board[r][tempC + 1].getValue() == board[r][tempC].getValue()) {
+
+							// Change current slide event for tile
+							SlideEvent slideOverEvent = new SlideEvent(tempGS, SlideEventAction.CombineOver, r, c, r,
+									tempC + 1);
+							if (moved) {
+								slides.set(slides.size() - 1, slideOverEvent);
+							} else {
+								slides.add(slideOverEvent);
+							}
+
+							// Edit any slide event with the square we're sliding over
+							GameSquare combinedWith = board[r][tempC + 1];
+							boolean existing = false;
+							for (SlideEvent slide : slides) {
+								if (slide.tile.equals(combinedWith)) {
+									slide.action = SlideEventAction.CombineUnder;
+									existing = true;
+								}
+							}
+
+							// If no preexisting slide event for what we're sliding over, create our own
+							if (!existing) {
+								slides.add(new SlideEvent(combinedWith, SlideEventAction.CombineUnder, r, tempC + 1, r,
+										tempC + 1));
+							}
+
+							board[r][tempC + 1] = board[r][tempC];
+							board[r][tempC + 1].increment();
+							board[r][tempC + 1].setComb(true);
+							board[r][tempC] = null;
+						}
+					}
+				}
+			}
+		}
+		resetCombineStatus();
+		return slides;
+	}
+
 	/**
 	 * Slide all the squares in a particular direction, possibly combining similar
 	 * squares
@@ -54,7 +379,6 @@ public class Game {
 	 * @param direction Direction to slide
 	 */
 	public void slide(Direction direction) {
-		GameSquare[][] shadowBoard = new GameSquare[HEIGHT][WIDTH];
 		switch (direction) {
 			case Up:
 				mergeUp();
@@ -86,6 +410,7 @@ public class Game {
 					board[row][j] = null;
 				}
 			}
+
 		}
 	}
 
@@ -176,6 +501,19 @@ public class Game {
 	 */
 	public GameSquare[][] getBoard() {
 		return board;
+	}
+
+	public void print() {
+		for (int r = 0; r < HEIGHT; r++) {
+			for (int c = 0; c < WIDTH; c++) {
+				if (board[r][c] == null) {
+					System.out.print("/");
+				} else {
+					System.out.print(board[r][c].getValue());
+				}
+			}
+			System.out.println();
+		}
 	}
 
 }
