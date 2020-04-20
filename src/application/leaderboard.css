@@ -12,7 +12,7 @@
 }
 
 #score-container {
-	-fx-padding: 0 0 48 0;
+	-fx-padding: 0 0 16 0;
 }
 
 #score-label {
@@ -28,26 +28,22 @@
 	-fx-font-size: 18;
 }
 
+#form {
+	-fx-padding: 0 0 48 0;
+}
+
+#form-name {
+	-fx-pref-height: 30;
+	-fx-prompt-text-fill: #4D4C7D;
+	-fx-text-fill: #363062;
+}
+
+#form-submit {
+	-fx-padding: 8 16 8 16;
+	-fx-font-size: 12;
+}
+
 #play-again {
-	-fx-padding: 12 24 12 24;
-	-fx-background-color: #4D4C7D;
-	-fx-background-radius: 5;
-	
-	-fx-text-fill: #FFF;
-	-fx-font-family: 'Inconsolata';
-	-fx-font-weight: bold;
-	-fx-font-size: 14;
-	
-	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 20, 0, 0, 10);
-	-fx-cursor: hand;
-}
-
-#play-again:hover {
-	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 35, 0, 0, 10);
-}
-
-#play-again:pressed {
-	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 5);
 }
 
 #leaderboard-title {

@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.Map;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
@@ -109,7 +112,7 @@ public class Main extends Application {
 		Button leaderboardButton = new Button("Leaderboard");
 		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
 
-		HBox actionButtons = new HBox();
+		HBox actionButtons = new HBox(15);
 		actionButtons.setAlignment(Pos.CENTER);
 		actionButtons.getChildren().addAll(menuButton, leaderboardButton);
 
@@ -206,7 +209,7 @@ public class Main extends Application {
 		gameOver.setId("game-over");
 		centerLayout.getChildren().add(gameOver);
 
-		// Possibly display user's score
+		// Possibly display user's score + input form
 		if (inputScore) {
 			Label scoreLabel = new Label("Your Score");
 			scoreLabel.setId("score-label");
@@ -218,15 +221,40 @@ public class Main extends Application {
 			Region spacer = new Region();
 			HBox.setHgrow(spacer, Priority.ALWAYS);
 
-			HBox scoreContainer = new HBox();
+			HBox scoreContainer = new HBox(scoreLabel, spacer, scoreValue);
 			scoreContainer.setId("score-container");
 			scoreContainer.setAlignment(Pos.BASELINE_CENTER);
-			scoreContainer.getChildren().addAll(scoreLabel, spacer, scoreValue);
 			centerLayout.getChildren().add(scoreContainer);
+
+			// Form to insert user's name
+			TextField nameInput = new TextField();
+			nameInput.setPromptText("Enter Name");
+			nameInput.setId("form-name");
+			HBox.setHgrow(nameInput, Priority.ALWAYS);
+
+			Button submit = new Button("Submit");
+			submit.setId("form-submit");
+
+			// Form submit behavior
+			EventHandler<ActionEvent> submitLeaderboard = e -> {
+				System.out.println("Register " + nameInput.getText() + " with a score of " + game.getScore());
+			};
+
+			nameInput.setOnAction(submitLeaderboard);
+			submit.setOnAction(submitLeaderboard);
+
+			HBox form = new HBox(5, nameInput, submit);
+			form.setId("form");
+			centerLayout.getChildren().add(form);
 		}
 
 		// "Play Again" button
 		if (inputScore) {
+			/** @TODO Image is purple so we need to make play icon white */
+//			ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/play-icon.png")));
+//			playIcon.setPreserveRatio(true);
+//			playIcon.setFitWidth(12);
+
 			Button playAgain = new Button("Play Again");
 			playAgain.setId("play-again");
 			playAgain.setOnAction(e -> renderGameWithTheme(currentTheme));
@@ -259,9 +287,8 @@ public class Main extends Application {
 			Region spacer = new Region();
 			HBox.setHgrow(spacer, Priority.ALWAYS);
 
-			HBox row = new HBox();
+			HBox row = new HBox(name, spacer, score);
 			row.setId("leaderboard-player");
-			row.getChildren().addAll(name, spacer, score);
 			topScoresList.getChildren().add(row);
 		}
 		centerLayout.getChildren().add(topScoresList);

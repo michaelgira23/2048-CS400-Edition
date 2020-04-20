@@ -31,3 +31,25 @@
 	-fx-font-size: 18;
 	-fx-text-fill: #827397;
 }
+
+.button {
+	-fx-padding: 12 24 12 24;
+	-fx-background-color: #4D4C7D;
+	-fx-background-radius: 5;
+	
+	-fx-text-fill: #FFF;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-weight: bold;
+	-fx-font-size: 14;
+	
+	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 20, 0, 0, 10);
+	-fx-cursor: hand;
+}
+
+.button:hover {
+	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 35, 0, 0, 10);
+}
+
+.button:pressed {
+	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 5);
+}
