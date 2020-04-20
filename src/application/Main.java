@@ -27,14 +27,17 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
+	private static final boolean DEBUG = true;
+
 	private static final int WINDOW_WIDTH = 600;
 	private static final int WINDOW_HEIGHT = 700;
 	private static final String APP_TITLE = "2048: CS400 Edition";
 
+	private int seed = 0;
 	private List<String> args;
 	private Stage primaryStage;
 
-	private Game game = new Game(2);
+	private Game game;
 	private GameTheme currentTheme = new BinaryTheme();
 
 	/**
@@ -66,7 +69,8 @@ public class Main extends Application {
 	private void renderMenu() {
 
 		// Action buttons
-		ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/play-icon.png")));
+		ImageView playIcon = new ImageView(
+				new Image(getClass().getResourceAsStream("assets/play-icon.png")));
 		playIcon.setPreserveRatio(true);
 		playIcon.setFitWidth(22);
 
@@ -97,18 +101,26 @@ public class Main extends Application {
 	 * @param theme Current theme with which to render the game
 	 */
 	private void renderGameWithTheme(GameTheme theme) {
+		game = new Game(seed);
 		BorderPane gameLayout = new BorderPane();
 
 		// Game title + action buttons at the top
 		Button menuButton = new Button("Menu");
 		menuButton.setOnAction(e -> renderMenu());
 
+		// TODO: LeaderBoard should not be directly accessible from the game body
+		//  , unless a "return" button is set, and a parameter showing whether it
+		//  should display "Game Over"
 		Button leaderboardButton = new Button("Leaderboard");
 		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
 
+		// TODO: implement a restart button
+		Button restartButton = new Button("Restart");
+		restartButton.setOnAction(e -> {});
+
 		HBox actionButtons = new HBox();
 		actionButtons.setAlignment(Pos.CENTER);
-		actionButtons.getChildren().addAll(menuButton, leaderboardButton);
+		actionButtons.getChildren().addAll(menuButton, leaderboardButton, restartButton);
 
 		VBox gameHeader = new VBox();
 		gameHeader.setAlignment(Pos.CENTER);
@@ -145,7 +157,7 @@ public class Main extends Application {
 		Scene gameScene = new Scene(gameLayout, WINDOW_WIDTH, WINDOW_HEIGHT);
 		gameScene.getStylesheets().addAll("application/application.css", "application/game.css");
 
-		gameScene.addEventFilter(KeyEvent.KEY_PRESSED, e -> handleKeyPress(e));
+		gameScene.addEventFilter(KeyEvent.KEY_PRESSED, this::handleKeyPress);
 
 		primaryStage.setScene(gameScene);
 	}
@@ -181,13 +193,15 @@ public class Main extends Application {
 			break;
 		}
 
-		System.out.println("slide direction: " + direction);
-		game.slide(direction);
+		// DEBUG
+		if(DEBUG) System.out.println("slide direction: " + direction);
+
+		if(direction != null) game.slide(direction);
 	}
 
 	/**
 	 * On the primary stage, display leaderboard of high scores
-	 * 
+	 *
 	 * @param inputScore Whether to display form for inputting user score;
 	 *                   otherwise, just display existing scores.
 	 */
@@ -198,6 +212,8 @@ public class Main extends Application {
 		centerLayout.setAlignment(Pos.CENTER);
 
 		// "Game Over" header
+		// TODO: implement a return button, and let a parameter to check if
+		//  it is gameOver or just that leaderBoard button is clicked
 		Label gameOver = new Label("Game Over");
 		centerLayout.getChildren().add(gameOver);
 
