@@ -70,17 +70,17 @@ public class Main extends Application {
 		ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/play-icon.png")));
 		playIcon.setPreserveRatio(true);
 		playIcon.setFitWidth(22);
-		
+
 		Button playButton = new Button("", playIcon);
 		playButton.setId("play");
-		
+
 		playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
 
 		// Stack game title above and action buttons below
 		VBox gameMenu = new VBox();
 		gameMenu.setAlignment(Pos.CENTER);
 		gameMenu.getChildren().addAll(getGameHeader(true), playButton);
-		
+
 		gameMenu.setSpacing(20);
 
 		// Entire page layout
