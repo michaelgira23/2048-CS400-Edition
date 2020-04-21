@@ -232,7 +232,7 @@ public class Main extends Application {
 			Label scoreLabel = new Label("Your Score");
 			scoreLabel.setId("score-label");
 
-			Label scoreValue = new Label(String.valueOf(game.getScore()));
+			Label scoreValue = new Label(Integer.toBinaryString(Math.max(game.getScore(), 0)));
 			scoreValue.setId("score-value");
 
 			// Filler element for spacing out other elements in an HBox
@@ -312,7 +312,7 @@ public class Main extends Application {
 			Label name = new Label(entry.getKey());
 			name.setId("leaderboard-name");
 
-			Label score = new Label(entry.getValue().toString());
+			Label score = new Label(Integer.toBinaryString(entry.getValue()));
 			score.setId("leaderboard-score");
 
 			// Filler element for spacing out other elements in an HBox
