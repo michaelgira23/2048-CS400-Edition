@@ -3,18 +3,6 @@
 	-fx-background-color: #FFF;
 	-fx-background-radius: 5;
 	-fx-text-fill: #363062;
-	-fx-font-family: 'Inconsolata';
-	-fx-font-weight: bold;
 	-fx-font-size: 18;
-	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 20, 0, 0, 10);
-	-fx-cursor: hand;
 	-fx-graphic-text-gap: 15;
-}
-
-#menu-button:hover {
-	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 35, 0, 0, 10);
-}
-
-#menu-button:pressed {
-	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 5);
 }

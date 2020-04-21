@@ -75,7 +75,7 @@ public class Main extends Application {
 		playIcon.setPreserveRatio(true);
 		playIcon.setFitWidth(22);
 
-		Button playButton = new Button("Play", playIcon);
+		Button playButton = new Button("", playIcon);
 		playButton.setId("menu-button");
 		playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
 
@@ -83,10 +83,11 @@ public class Main extends Application {
 		ImageView leaderboardIcon = new ImageView(
 				new Image(getClass().getResourceAsStream("assets/leaderboard-icon.png")));
 		leaderboardIcon.setPreserveRatio(true);
-		leaderboardIcon.setFitWidth(22);
+		leaderboardIcon.setFitWidth(10);
 
 		Button leaderboardButton = new Button("Leaderboard", leaderboardIcon);
-		leaderboardButton.setId("menu-button");
+//		leaderboardButton.setId("menu-button");
+		leaderboardButton.getStyleClass().add("small");
 		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
 
 //		HBox menuButtons = new HBox(15, playButton, leaderboardButton);
@@ -118,13 +119,14 @@ public class Main extends Application {
 		BorderPane gameLayout = new BorderPane();
 
 		// Game title + action buttons at the top
-		Button menuButton = new Button("Menu");
-		menuButton.setOnAction(e -> renderMenu());
 
 		Button leaderboardButton = new Button("Leaderboard");
 		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
 
-		HBox actionButtons = new HBox(15, menuButton, leaderboardButton);
+		Button menuButton = new Button("Menu");
+		menuButton.setOnAction(e -> renderMenu());
+
+		HBox actionButtons = new HBox(15, leaderboardButton, menuButton);
 		actionButtons.setAlignment(Pos.CENTER);
 
 		VBox gameHeader = new VBox();
@@ -250,6 +252,7 @@ public class Main extends Application {
 
 			Button submit = new Button("Submit");
 			submit.setId("form-submit");
+			submit.getStyleClass().add("small");
 
 			// Form submit behavior
 			EventHandler<ActionEvent> submitLeaderboard = e -> {
