@@ -52,8 +52,8 @@ public class Main extends Application {
 
 		this.primaryStage = primaryStage;
 		primaryStage.setTitle(APP_TITLE);
-//		renderMenu();
-		renderLeaderboard(true);
+		renderMenu();
+//		renderLeaderboard(false);
 		primaryStage.show();
 	}
 
@@ -71,20 +71,32 @@ public class Main extends Application {
 	 */
 	private void renderMenu() {
 
-		// Action buttons
+		// Play button
 		ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/play-icon.png")));
 		playIcon.setPreserveRatio(true);
 		playIcon.setFitWidth(22);
 
 		Button playButton = new Button("", playIcon);
-		playButton.setId("play");
-
+		playButton.setId("menu-button");
 		playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
+
+		// Leaderboard button
+		ImageView leaderboardIcon = new ImageView(
+				new Image(getClass().getResourceAsStream("assets/leaderboard-icon.png")));
+		leaderboardIcon.setPreserveRatio(true);
+		leaderboardIcon.setFitWidth(22);
+
+		Button leaderboardButton = new Button("", leaderboardIcon);
+		leaderboardButton.setId("menu-button");
+		leaderboardButton.setOnAction(e -> renderLeaderboard(false));
+
+		HBox menuButtons = new HBox(15, playButton, leaderboardButton);
+		menuButtons.setAlignment(Pos.CENTER);
 
 		// Stack game title above and action buttons below
 		VBox gameMenu = new VBox();
 		gameMenu.setAlignment(Pos.CENTER);
-		gameMenu.getChildren().addAll(getGameHeader(true), playButton);
+		gameMenu.getChildren().addAll(getGameHeader(true), menuButtons);
 
 		gameMenu.setSpacing(20);
 
@@ -204,10 +216,15 @@ public class Main extends Application {
 		centerLayout.setId("center-layout");
 		centerLayout.setAlignment(Pos.TOP_CENTER);
 
-		// "Game Over" header
-		Label gameOver = new Label("Game Over");
-		gameOver.setId("game-over");
-		centerLayout.getChildren().add(gameOver);
+		// Either "Leaderboard" or "Game Over" header
+		Label title;
+		if (inputScore) {
+			title = new Label("Game Over");
+		} else {
+			title = new Label("Leaderboard");
+		}
+		title.setId("leaderboard-title");
+		centerLayout.getChildren().add(title);
 
 		// Possibly display user's score + input form
 		if (inputScore) {
@@ -249,22 +266,29 @@ public class Main extends Application {
 		}
 
 		// "Play Again" button
+
+		/** @TODO Image is purple so we need to make play icon white */
+//		ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/play-icon.png")));
+//		playIcon.setPreserveRatio(true);
+//		playIcon.setFitWidth(12);
+
+		Button playAgain;
 		if (inputScore) {
-			/** @TODO Image is purple so we need to make play icon white */
-//			ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/play-icon.png")));
-//			playIcon.setPreserveRatio(true);
-//			playIcon.setFitWidth(12);
-
-			Button playAgain = new Button("Play Again");
-			playAgain.setId("play-again");
+			playAgain = new Button("Play Again");
 			playAgain.setOnAction(e -> renderGameWithTheme(currentTheme));
-			centerLayout.getChildren().add(playAgain);
+		} else {
+			playAgain = new Button("Menu");
+			playAgain.setOnAction(e -> renderMenu());
 		}
+		playAgain.setId("play-again");
+		centerLayout.getChildren().add(playAgain);
 
-		// Top scores
-		Label topScoresTitle = new Label("Top Scores");
-		topScoresTitle.setId("leaderboard-title");
-		centerLayout.getChildren().add(topScoresTitle);
+		if (inputScore) {
+			// Top scores
+			Label topScoresHeader = new Label("Top Scores");
+			topScoresHeader.setId("leaderboard-header");
+			centerLayout.getChildren().add(topScoresHeader);
+		}
 
 		// Pretend high scores
 		Map<String, Integer> topScores = new LinkedHashMap<String, Integer>();

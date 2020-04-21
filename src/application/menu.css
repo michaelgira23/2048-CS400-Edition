@@ -1,4 +1,4 @@
-#play {
+#menu-button {
 	-fx-padding: 32;
 	-fx-background-color: #FFF;
 	-fx-background-radius: 5;
@@ -10,10 +10,10 @@
 	-fx-cursor: hand;
 }
 
-#play:hover {
+#menu-button:hover {
 	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 35, 0, 0, 10);
 }
 
-#play:pressed {
+#menu-button:pressed {
 	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 5);
 }
