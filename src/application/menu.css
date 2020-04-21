@@ -8,6 +8,7 @@
 	-fx-font-size: 18;
 	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 20, 0, 0, 10);
 	-fx-cursor: hand;
+	-fx-graphic-text-gap: 15;
 }
 
 #menu-button:hover {

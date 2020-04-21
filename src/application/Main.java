@@ -53,7 +53,6 @@ public class Main extends Application {
 		this.primaryStage = primaryStage;
 		primaryStage.setTitle(APP_TITLE);
 		renderMenu();
-//		renderLeaderboard(false);
 		primaryStage.show();
 	}
 
@@ -76,7 +75,7 @@ public class Main extends Application {
 		playIcon.setPreserveRatio(true);
 		playIcon.setFitWidth(22);
 
-		Button playButton = new Button("", playIcon);
+		Button playButton = new Button("Play", playIcon);
 		playButton.setId("menu-button");
 		playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
 
@@ -86,11 +85,12 @@ public class Main extends Application {
 		leaderboardIcon.setPreserveRatio(true);
 		leaderboardIcon.setFitWidth(22);
 
-		Button leaderboardButton = new Button("", leaderboardIcon);
+		Button leaderboardButton = new Button("Leaderboard", leaderboardIcon);
 		leaderboardButton.setId("menu-button");
-		leaderboardButton.setOnAction(e -> renderLeaderboard(false));
+		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
 
-		HBox menuButtons = new HBox(15, playButton, leaderboardButton);
+//		HBox menuButtons = new HBox(15, playButton, leaderboardButton);
+		VBox menuButtons = new VBox(15, playButton, leaderboardButton);
 		menuButtons.setAlignment(Pos.CENTER);
 
 		// Stack game title above and action buttons below
@@ -124,9 +124,8 @@ public class Main extends Application {
 		Button leaderboardButton = new Button("Leaderboard");
 		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
 
-		HBox actionButtons = new HBox(15);
+		HBox actionButtons = new HBox(15, menuButton, leaderboardButton);
 		actionButtons.setAlignment(Pos.CENTER);
-		actionButtons.getChildren().addAll(menuButton, leaderboardButton);
 
 		VBox gameHeader = new VBox();
 		gameHeader.setAlignment(Pos.CENTER);
@@ -272,16 +271,22 @@ public class Main extends Application {
 //		playIcon.setPreserveRatio(true);
 //		playIcon.setFitWidth(12);
 
-		Button playAgain;
+		Button playButton;
 		if (inputScore) {
-			playAgain = new Button("Play Again");
-			playAgain.setOnAction(e -> renderGameWithTheme(currentTheme));
+			playButton = new Button("Play Again");
 		} else {
-			playAgain = new Button("Menu");
-			playAgain.setOnAction(e -> renderMenu());
+			playButton = new Button("Play");
 		}
-		playAgain.setId("play-again");
-		centerLayout.getChildren().add(playAgain);
+		playButton.setId("play-again");
+		playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
+
+		Button menuButton = new Button("Menu");
+		menuButton.setOnAction(e -> renderMenu());
+
+		HBox actionButtons = new HBox(15, playButton, menuButton);
+		actionButtons.setAlignment(Pos.CENTER);
+
+		centerLayout.getChildren().add(actionButtons);
 
 		if (inputScore) {
 			// Top scores
