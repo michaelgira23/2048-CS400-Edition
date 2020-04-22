@@ -1,5 +1,3 @@
 Manifest-Version: 1.0
-Created-By: deppeler
-Class-Path: json-simple-1.1.1.jar
+Created-By: Michael Gira, Quan Nguyen, Hanyuan Wu, William Cong, Faith Isaac
 Main-Class: application.Main
-
