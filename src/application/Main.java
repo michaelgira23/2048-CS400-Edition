@@ -246,7 +246,12 @@ public class Main extends Application {
 			Label scoreLabel = new Label("Your Score");
 			scoreLabel.setId("score-label");
 
-			Label scoreValue = new Label(Integer.toBinaryString(Math.max(game.getScore(), 0)));
+			Label scoreValue;
+			if (game == null) {
+				scoreValue = new Label(Integer.toBinaryString(0));
+			} else {
+				scoreValue = new Label(Integer.toBinaryString(Math.max(game.getScore(), 0)));
+			}
 			scoreValue.setId("score-value");
 
 			// Filler element for spacing out other elements in an HBox
