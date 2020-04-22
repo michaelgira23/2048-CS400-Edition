@@ -58,6 +58,7 @@ public class BinaryTheme implements GameTheme {
 
 				// Get the empty tile at the position we're trying to move to, so that we can
 				// get the new coordinates
+				// TODO: This May return null! please handle it if possible
 				Node targetTile = getBackgroundTileFromGrid(grid, slide.toRow, slide.toColumn);
 				Bounds targetBounds = targetTile.getBoundsInParent();
 
