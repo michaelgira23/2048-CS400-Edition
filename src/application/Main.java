@@ -5,16 +5,21 @@ import java.util.List;
 import java.util.Map;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
@@ -72,18 +77,33 @@ public class Main extends Application {
 		// Action buttons
 		ImageView playIcon = new ImageView(
 				new Image(getClass().getResourceAsStream("assets/play-icon.png")));
+
 		playIcon.setPreserveRatio(true);
 		playIcon.setFitWidth(22);
 
 		Button playButton = new Button("", playIcon);
-		playButton.setId("play");
-
+		playButton.setId("menu-button");
 		playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
+
+		// Leaderboard button
+		ImageView leaderboardIcon = new ImageView(
+				new Image(getClass().getResourceAsStream("assets/leaderboard-icon.png")));
+		leaderboardIcon.setPreserveRatio(true);
+		leaderboardIcon.setFitWidth(10);
+
+		Button leaderboardButton = new Button("Leaderboard", leaderboardIcon);
+//		leaderboardButton.setId("menu-button");
+		leaderboardButton.getStyleClass().add("small");
+		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
+
+//		HBox menuButtons = new HBox(15, playButton, leaderboardButton);
+		VBox menuButtons = new VBox(15, playButton, leaderboardButton);
+		menuButtons.setAlignment(Pos.CENTER);
 
 		// Stack game title above and action buttons below
 		VBox gameMenu = new VBox();
 		gameMenu.setAlignment(Pos.CENTER);
-		gameMenu.getChildren().addAll(getGameHeader(true), playButton);
+		gameMenu.getChildren().addAll(getGameHeader(true), menuButtons);
 
 		gameMenu.setSpacing(20);
 
@@ -106,8 +126,6 @@ public class Main extends Application {
 		BorderPane gameLayout = new BorderPane();
 
 		// Game title + action buttons at the top
-		Button menuButton = new Button("Menu");
-		menuButton.setOnAction(e -> renderMenu());
 
 		// TODO: LeaderBoard should not be directly accessible from the game body
 		//  , unless a "return" button is set, and a parameter showing whether it
@@ -116,12 +134,11 @@ public class Main extends Application {
 		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
 
 		// TODO: implement a restart button
-		Button restartButton = new Button("Restart");
-		restartButton.setOnAction(e -> {});
+		Button menuButton = new Button("Menu");
+		menuButton.setOnAction(e -> renderMenu());
 
-		HBox actionButtons = new HBox();
+		HBox actionButtons = new HBox(15, leaderboardButton, menuButton);
 		actionButtons.setAlignment(Pos.CENTER);
-		actionButtons.getChildren().addAll(menuButton, leaderboardButton, restartButton);
 
 		VBox gameHeader = new VBox();
 		gameHeader.setAlignment(Pos.CENTER);
@@ -173,25 +190,25 @@ public class Main extends Application {
 		Direction direction;
 
 		switch (event.getCode()) {
-		case UP:
-		case W:
-			direction = Direction.Up;
-			break;
-		case RIGHT:
-		case D:
-			direction = Direction.Right;
-			break;
-		case DOWN:
-		case S:
-			direction = Direction.Down;
-			break;
-		case LEFT:
-		case A:
-			direction = Direction.Left;
-			break;
-		default:
-			direction = null;
-			break;
+			case UP:
+			case W:
+				direction = Direction.Up;
+				break;
+			case RIGHT:
+			case D:
+				direction = Direction.Right;
+				break;
+			case DOWN:
+			case S:
+				direction = Direction.Down;
+				break;
+			case LEFT:
+			case A:
+				direction = Direction.Left;
+				break;
+			default:
+				direction = null;
+				break;
 		}
 
 		// DEBUG
@@ -210,34 +227,90 @@ public class Main extends Application {
 
 		// Center layout
 		VBox centerLayout = new VBox();
-		centerLayout.setAlignment(Pos.CENTER);
+		centerLayout.setId("center-layout");
+		centerLayout.setAlignment(Pos.TOP_CENTER);
 
-		// "Game Over" header
-		// TODO: implement a return button, and let a parameter to check if
+		// DONE: implement a return button, and let a parameter to check if
 		//  it is gameOver or just that leaderBoard button is clicked
-		Label gameOver = new Label("Game Over");
-		centerLayout.getChildren().add(gameOver);
-
-		// Possibly display user's score
+		Label title;
 		if (inputScore) {
-			Label scoreLabel = new Label("Score");
-			Label scoreValue = new Label(String.valueOf(game.getScore()));
+			title = new Label("Game Over");
+		} else {
+			title = new Label("Leaderboard");
+		}
+		title.setId("leaderboard-title");
+		centerLayout.getChildren().add(title);
 
-			HBox scoreDisplay = new HBox();
-			scoreDisplay.getChildren().addAll(scoreLabel, scoreValue);
-			centerLayout.getChildren().add(scoreDisplay);
+		// Possibly display user's score + input form
+		if (inputScore) {
+			Label scoreLabel = new Label("Your Score");
+			scoreLabel.setId("score-label");
+
+			Label scoreValue = new Label(Integer.toBinaryString(Math.max(game.getScore(), 0)));
+			scoreValue.setId("score-value");
+
+			// Filler element for spacing out other elements in an HBox
+			Region spacer = new Region();
+			HBox.setHgrow(spacer, Priority.ALWAYS);
+
+			HBox scoreContainer = new HBox(scoreLabel, spacer, scoreValue);
+			scoreContainer.setId("score-container");
+			scoreContainer.setAlignment(Pos.BASELINE_CENTER);
+			centerLayout.getChildren().add(scoreContainer);
+
+			// Form to insert user's name
+			TextField nameInput = new TextField();
+			nameInput.setPromptText("Enter Name");
+			nameInput.setId("form-name");
+			HBox.setHgrow(nameInput, Priority.ALWAYS);
+
+			Button submit = new Button("Submit");
+			submit.setId("form-submit");
+			submit.getStyleClass().add("small");
+
+			// Form submit behavior
+			EventHandler<ActionEvent> submitLeaderboard = e -> {
+				System.out.println("Register " + nameInput.getText() + " with a score of " + game.getScore());
+			};
+
+			nameInput.setOnAction(submitLeaderboard);
+			submit.setOnAction(submitLeaderboard);
+
+			HBox form = new HBox(5, nameInput, submit);
+			form.setId("form");
+			centerLayout.getChildren().add(form);
 		}
 
 		// "Play Again" button
-		if (inputScore) {
-			Button playAgain = new Button("Play Again");
-			playAgain.setOnAction(e -> renderGameWithTheme(currentTheme));
-			centerLayout.getChildren().add(playAgain);
-		}
 
-		// Top scores
-		Label topScoresLabel = new Label("Top Scores");
-		centerLayout.getChildren().add(topScoresLabel);
+		/** @TODO Image is purple so we need to make play icon white */
+//		ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/play-icon.png")));
+//		playIcon.setPreserveRatio(true);
+//		playIcon.setFitWidth(12);
+
+		Button playButton;
+		if (inputScore) {
+			playButton = new Button("Play Again");
+		} else {
+			playButton = new Button("Play");
+		}
+		playButton.setId("play-again");
+		playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
+
+		Button menuButton = new Button("Menu");
+		menuButton.setOnAction(e -> renderMenu());
+
+		HBox actionButtons = new HBox(15, playButton, menuButton);
+		actionButtons.setAlignment(Pos.CENTER);
+
+		centerLayout.getChildren().add(actionButtons);
+
+		if (inputScore) {
+			// Top scores
+			Label topScoresHeader = new Label("Top Scores");
+			topScoresHeader.setId("leaderboard-header");
+			centerLayout.getChildren().add(topScoresHeader);
+		}
 
 		// Pretend high scores
 		Map<String, Integer> topScores = new LinkedHashMap<String, Integer>();
@@ -249,8 +322,19 @@ public class Main extends Application {
 
 		VBox topScoresList = new VBox();
 		for (Map.Entry<String, Integer> entry : topScores.entrySet()) {
-			HBox row = new HBox();
-			row.getChildren().addAll(new Label(entry.getKey()), new Label(entry.getValue().toString()));
+
+			Label name = new Label(entry.getKey());
+			name.setId("leaderboard-name");
+
+			Label score = new Label(Integer.toBinaryString(entry.getValue()));
+			score.setId("leaderboard-score");
+
+			// Filler element for spacing out other elements in an HBox
+			Region spacer = new Region();
+			HBox.setHgrow(spacer, Priority.ALWAYS);
+
+			HBox row = new HBox(name, spacer, score);
+			row.setId("leaderboard-player");
 			topScoresList.getChildren().add(row);
 		}
 		centerLayout.getChildren().add(topScoresList);

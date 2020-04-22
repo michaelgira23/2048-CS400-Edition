@@ -1,0 +1,68 @@
+#center-layout {
+	-fx-max-width: 250;
+	-fx-padding: 50 0 50 0;
+}
+
+#leaderboard-title {
+	-fx-padding: 24 0 12 0;
+	-fx-text-fill: #363062;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-weight: bold;
+	-fx-font-size: 36;
+}
+
+#score-container {
+	-fx-padding: 0 0 16 0;
+}
+
+#score-label {
+	-fx-text-fill: #363062;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-weight: bold;
+	-fx-font-size: 14;
+}
+
+#score-value {
+	-fx-text-fill: #363062;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-size: 18;
+}
+
+#form {
+	-fx-padding: 0 0 48 0;
+}
+
+#form-name {
+	-fx-pref-height: 30;
+	-fx-prompt-text-fill: #4D4C7D;
+	-fx-text-fill: #363062;
+	-fx-border-width: 1;
+	-fx-border-color: #4D4C7D;
+	-fx-border-radius: 5;
+}
+
+#form-submit {
+}
+
+#play-again {
+}
+
+#leaderboard-header {
+	-fx-padding: 48 0 0 12;
+	
+	-fx-text-fill: #4D4C7D;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-weight: bold;
+	-fx-font-size: 18;
+}
+
+#leaderboard-player {
+	-fx-padding: 12 0 12 0;
+}
+
+#leaderboard-name,
+#leaderboard-score {
+	-fx-text-fill: #363062;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-size: 14;
+}

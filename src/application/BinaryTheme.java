@@ -107,7 +107,7 @@ public class BinaryTheme implements GameTheme {
 					displayTile.getStyleClass().addAll("tile", "value", "value-" + tile.getValue());
 
 					// Display number value of tile
-					Label label = new Label(String.valueOf(tile.getValue()));
+					Label label = new Label(Integer.toBinaryString(tile.getValue()));
 					label.getStyleClass().add("value-label");
 					displayTile.getChildren().add(label);
 
