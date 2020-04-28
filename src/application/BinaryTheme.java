@@ -65,7 +65,7 @@ public class BinaryTheme implements GameTheme {
 				TranslateTransition translate = new TranslateTransition(Duration.millis(200), tile);
 				translate.setInterpolator(Interpolator.EASE_OUT);
 				translate.setByX(targetBounds.getCenterX() - tileBounds.getCenterX());
-				translate.setByY(targetBounds.getCenterY() - tileBounds.getCenterY());
+				translate.setByY(targetBounds.getCenterY() - tileBounds.getCenterY() + 5);
 
 				translations.getChildren().add(translate);
 			}

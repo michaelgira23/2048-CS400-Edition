@@ -32,7 +32,6 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-
 	private static final boolean DEBUG = true;
 
 	private static final int WINDOW_WIDTH = 600;
@@ -75,8 +74,7 @@ public class Main extends Application {
 	private void renderMenu() {
 
 		// Action buttons
-		ImageView playIcon = new ImageView(
-				new Image(getClass().getResourceAsStream("assets/play-icon.png")));
+		ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/play-icon.png")));
 
 		playIcon.setPreserveRatio(true);
 		playIcon.setFitWidth(22);
@@ -94,7 +92,7 @@ public class Main extends Application {
 		Button leaderboardButton = new Button("Leaderboard", leaderboardIcon);
 //		leaderboardButton.setId("menu-button");
 		leaderboardButton.getStyleClass().add("small");
-		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
+		leaderboardButton.setOnAction(e -> renderLeaderboard(false));
 
 //		HBox menuButtons = new HBox(15, playButton, leaderboardButton);
 		VBox menuButtons = new VBox(15, playButton, leaderboardButton);
@@ -128,8 +126,8 @@ public class Main extends Application {
 		// Game title + action buttons at the top
 
 		// TODO: LeaderBoard should not be directly accessible from the game body
-		//  , unless a "return" button is set, and a parameter showing whether it
-		//  should display "Game Over"
+		// , unless a "return" button is set, and a parameter showing whether it
+		// should display "Game Over"
 		Button leaderboardButton = new Button("Leaderboard");
 		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
 
@@ -212,9 +210,11 @@ public class Main extends Application {
 		}
 
 		// DEBUG
-		if(DEBUG) System.out.println("slide direction: " + direction);
+		if (DEBUG)
+			System.out.println("slide direction: " + direction);
 
-		if(direction != null) game.slide(direction);
+		if (direction != null)
+			game.slide(direction);
 	}
 
 	/**
@@ -231,7 +231,7 @@ public class Main extends Application {
 		centerLayout.setAlignment(Pos.TOP_CENTER);
 
 		// DONE: implement a return button, and let a parameter to check if
-		//  it is gameOver or just that leaderBoard button is clicked
+		// it is gameOver or just that leaderBoard button is clicked
 		Label title;
 		if (inputScore) {
 			title = new Label("Game Over");
