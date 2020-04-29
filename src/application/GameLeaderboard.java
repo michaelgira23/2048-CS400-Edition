@@ -83,8 +83,6 @@ public class GameLeaderboard implements Serializable {
 
 	// Priority game leader board
 	private PriorityQueue<PlayerScore> topScores = new PriorityQueue<PlayerScore>();
-	// limit the amounts of top score
-	public static final int NUM_LEADER_BOARD = 5;
 
 	// Check if the current score is in top score
 	public boolean isTopScore(PlayerScore currentScore) {
@@ -98,31 +96,6 @@ public class GameLeaderboard implements Serializable {
 		}
 
 		return false;
-	}
-
-	// take out the lowest score
-	public void pollMinScore() {
-		if (topScores.isEmpty() == true) {
-
-			return;
-		}
-
-		Iterator<PlayerScore> itr = topScores.iterator();
-
-		PlayerScore minScore = itr.next();
-		while (itr.hasNext()) {
-
-			PlayerScore currentScore = itr.next();
-
-			if (currentScore.getScore() < minScore.getScore()) {
-
-				minScore = currentScore;
-			}
-		}
-		// If list has 5 elements, take out 1 lowest element
-		if (topScores.size() >= 5) {
-			topScores.remove(minScore);
-		}
 	}
 
 	// Add score to the list

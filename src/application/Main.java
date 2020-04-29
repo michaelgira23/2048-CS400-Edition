@@ -51,7 +51,7 @@ public class Main extends Application {
 	private GameTheme currentTheme = new BinaryTheme();
 
 	// Leader board score
-	private GameLeaderboard listGameLeaderBoard = new GameLeaderboard();
+	private GameLeaderboard listGameLeaderboard = new GameLeaderboard();
 
 	/**
 	 * Sets up initial game screen
@@ -68,13 +68,13 @@ public class Main extends Application {
 
 		// Load game leader board
 		loadScoreFromFile();
-//		
+
 //		// Du lieu gia
-//		listGameLeaderBoard.getTopScores().add(new GameLeaderBoard("William Cong", 4));
-//		listGameLeaderBoard.getTopScores().add(new GameLeaderBoard("Faith Issac", 8));
-//		listGameLeaderBoard.getTopScores().add(new GameLeaderBoard("Quan Nguyen", 16));
-//		listGameLeaderBoard.getTopScores().add(new GameLeaderBoard("Hanyuan Wu", 32));
-//		listGameLeaderBoard.getTopScores().add(new GameLeaderBoard("Michael Gira", 64));
+//		listGameLeaderboard.getTopScores().add(new PlayerScore("Faith Issac", 8));
+//		listGameLeaderboard.getTopScores().add(new PlayerScore("William Cong", 4));
+//		listGameLeaderboard.getTopScores().add(new PlayerScore("Hanyuan Wu", 32));
+//		listGameLeaderboard.getTopScores().add(new PlayerScore("Michael Gira", 64));
+//		listGameLeaderboard.getTopScores().add(new PlayerScore("Quan Nguyen", 16));
 //		saveScoreToFile();
 	}
 
@@ -111,7 +111,7 @@ public class Main extends Application {
 		Button leaderboardButton = new Button("Leaderboard", leaderboardIcon);
 //		leaderboardButton.setId("menu-button");
 		leaderboardButton.getStyleClass().add("small");
-		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
+		leaderboardButton.setOnAction(e -> renderLeaderboard(false));
 
 //		HBox menuButtons = new HBox(15, playButton, leaderboardButton);
 		VBox menuButtons = new VBox(15, playButton, leaderboardButton);
@@ -298,15 +298,10 @@ public class Main extends Application {
 					System.out.println("Register " + nameInput.getText() + " with a score of " + game.getScore());
 					// get current score
 					PlayerScore currentScore = new PlayerScore(nameInput.getText(), game.getScore());
-					// check if this score is a high score
-					if (listGameLeaderBoard.isTopScore(currentScore)) {
-						// If the current score is the high one, take out the lowest one
-						listGameLeaderBoard.pollMinScore();
-						// Add current score to top score list
-						listGameLeaderBoard.addScoreToList(currentScore);
-						// save top score to file
-						saveScoreToFile();
-					}
+					// Add current score to top score list
+					listGameLeaderboard.addScoreToList(currentScore);
+					// save top score to file
+					saveScoreToFile();
 				}
 			};
 
@@ -360,7 +355,7 @@ public class Main extends Application {
 
 		VBox topScoresList = new VBox();
 		// sorting top score list
-		Object[] sortedScores = listGameLeaderBoard.sortedTopScores();
+		Object[] sortedScores = listGameLeaderboard.sortedTopScores();
 		for (Object object : sortedScores) {
 
 			PlayerScore currentScore = (PlayerScore) object;
@@ -425,7 +420,7 @@ public class Main extends Application {
 		try {
 			FileOutputStream f = new FileOutputStream(new File("leaderboard.json"));
 			ObjectOutputStream o = new ObjectOutputStream(f);
-			o.writeObject(listGameLeaderBoard);
+			o.writeObject(listGameLeaderboard);
 			o.close();
 			f.close();
 		} catch (FileNotFoundException e) {
@@ -441,8 +436,8 @@ public class Main extends Application {
 			FileInputStream fi = new FileInputStream(new File("leaderboard.json"));
 			ObjectInputStream oi = new ObjectInputStream(fi);
 			// Read objects
-			listGameLeaderBoard = (GameLeaderboard) oi.readObject();
-			System.out.println(listGameLeaderBoard.toString());
+			listGameLeaderboard = (GameLeaderboard) oi.readObject();
+			System.out.println(listGameLeaderboard.toString());
 			oi.close();
 			fi.close();
 		} catch (FileNotFoundException e) {
