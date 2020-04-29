@@ -12,6 +12,7 @@ import java.util.List;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -26,12 +27,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
 /**
  * Main game file
- * 
+ *
  * @author Michael Gira and Quan Nguyen
  *
  */
@@ -80,7 +82,7 @@ public class Main extends Application {
 
 	/**
 	 * Launches JavaFX
-	 * 
+	 *
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -108,13 +110,13 @@ public class Main extends Application {
 		leaderboardIcon.setPreserveRatio(true);
 		leaderboardIcon.setFitWidth(10);
 
-		Button leaderboardButton = new Button("Leaderboard", leaderboardIcon);
+		Button leaderboardButton = new Button(" Leaderboard", leaderboardIcon);
 //		leaderboardButton.setId("menu-button");
 		leaderboardButton.getStyleClass().add("small");
 		leaderboardButton.setOnAction(e -> renderLeaderboard(false));
 
 //		HBox menuButtons = new HBox(15, playButton, leaderboardButton);
-		VBox menuButtons = new VBox(15, playButton, leaderboardButton);
+		VBox menuButtons = new VBox(20, playButton, leaderboardButton);
 		menuButtons.setAlignment(Pos.CENTER);
 
 		// Stack game title above and action buttons below
@@ -135,11 +137,11 @@ public class Main extends Application {
 
 	/**
 	 * On the primary stage, display the game state rendered with a given theme
-	 * 
+	 *
 	 * @param theme Current theme with which to render the game
 	 */
 	private void renderGameWithTheme(GameTheme theme) {
-		game = new Game(seed);
+		game = new Game(seed, this);
 		BorderPane gameLayout = new BorderPane();
 
 		// Game title + action buttons at the top
@@ -147,14 +149,14 @@ public class Main extends Application {
 		// TODO: LeaderBoard should not be directly accessible from the game body
 		// , unless a "return" button is set, and a parameter showing whether it
 		// should display "Game Over"
-		Button leaderboardButton = new Button("Leaderboard");
-		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
+//		Button leaderboardButton = new Button("Leaderboard");
+//		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
 
 		// TODO: implement a restart button
 		Button menuButton = new Button("Menu");
 		menuButton.setOnAction(e -> renderMenu());
 
-		HBox actionButtons = new HBox(15, leaderboardButton, menuButton);
+		HBox actionButtons = new HBox(15, menuButton);
 		actionButtons.setAlignment(Pos.CENTER);
 
 		VBox gameHeader = new VBox();
@@ -195,11 +197,16 @@ public class Main extends Application {
 		gameScene.addEventFilter(KeyEvent.KEY_PRESSED, this::handleKeyPress);
 
 		primaryStage.setScene(gameScene);
+
+	}
+
+	public void gameOver() {
+		renderLeaderboard(true);
 	}
 
 	/**
 	 * Handle a key press for the game
-	 * 
+	 *
 	 * @param event KeyEvent associated with the key press
 	 */
 	private void handleKeyPress(KeyEvent event) {
@@ -292,6 +299,13 @@ public class Main extends Application {
 			submit.setId("form-submit");
 			submit.getStyleClass().add("small");
 
+			HBox form = new HBox(7, nameInput, submit);
+			form.setId("form");
+			centerLayout.getChildren().add(form);
+
+			Label submitted = new Label("Score has been submitted!");
+			submitted.setId("submitted");
+
 			// Form submit behavior
 			EventHandler<ActionEvent> submitLeaderboard = e -> {
 				if (game != null) {
@@ -303,14 +317,13 @@ public class Main extends Application {
 					// save top score to file
 					saveScoreToFile();
 				}
+				centerLayout.getChildren().remove(form);
+				centerLayout.getChildren().add(2, submitted);
+
 			};
 
 			nameInput.setOnAction(submitLeaderboard);
 			submit.setOnAction(submitLeaderboard);
-
-			HBox form = new HBox(5, nameInput, submit);
-			form.setId("form");
-			centerLayout.getChildren().add(form);
 
 		}
 
@@ -321,19 +334,26 @@ public class Main extends Application {
 //		playIcon.setPreserveRatio(true);
 //		playIcon.setFitWidth(12);
 
-		Button playButton;
-		if (inputScore) {
-			playButton = new Button("Play Again");
-		} else {
-			playButton = new Button("Play");
-		}
-		playButton.setId("play-again");
-		playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
+		HBox actionButtons;
 
 		Button menuButton = new Button("Menu");
 		menuButton.setOnAction(e -> renderMenu());
 
-		HBox actionButtons = new HBox(15, playButton, menuButton);
+		// does not display play button if its in leaderboard-only mode
+		if (inputScore) {
+
+			ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/play-icon.png")));
+			playIcon.setId("play-icon");
+			playIcon.setPreserveRatio(true);
+			playIcon.setFitWidth(12);
+			Button playButton = new Button(" Play Again", playIcon);
+			playButton.setId("play-again");
+			playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
+
+			actionButtons = new HBox(15, playButton, menuButton);
+		} else {
+			actionButtons = new HBox(15, menuButton);
+		}
 		actionButtons.setAlignment(Pos.CENTER);
 
 		centerLayout.getChildren().add(actionButtons);
@@ -386,7 +406,7 @@ public class Main extends Application {
 
 	/**
 	 * Get a JavaFX node that has the game's title and subtitle
-	 * 
+	 *
 	 * @param big Whether to have the large variant (with bigger font size and line
 	 *            break in middle)
 	 * @return The game header to display throughout the application at the top
@@ -424,7 +444,7 @@ public class Main extends Application {
 			o.close();
 			f.close();
 		} catch (FileNotFoundException e) {
-			System.out.println("File not found");
+			System.out.println("File not found1");
 		} catch (IOException e) {
 			System.out.println("Error initializing stream");
 		}
@@ -441,7 +461,7 @@ public class Main extends Application {
 			oi.close();
 			fi.close();
 		} catch (FileNotFoundException e) {
-			System.out.println("File not found");
+			System.out.println("File not found2");
 		} catch (IOException e) {
 			System.out.println("Error initializing stream");
 		} catch (ClassNotFoundException e) {
