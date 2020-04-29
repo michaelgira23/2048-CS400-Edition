@@ -1,8 +1,13 @@
 package application;
 
-import java.util.LinkedHashMap;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
-import java.util.Map;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -27,7 +32,7 @@ import javafx.stage.Stage;
 /**
  * Main game file
  * 
- * @author Michael Gira
+ * @author Michael Gira and Quan Nguyen
  *
  */
 public class Main extends Application {
@@ -45,6 +50,9 @@ public class Main extends Application {
 	private Game game;
 	private GameTheme currentTheme = new BinaryTheme();
 
+	// Leader board score
+	private GameLeaderboard listGameLeaderBoard = new GameLeaderboard();
+
 	/**
 	 * Sets up initial game screen
 	 */
@@ -57,6 +65,17 @@ public class Main extends Application {
 		primaryStage.setTitle(APP_TITLE);
 		renderMenu();
 		primaryStage.show();
+
+		// Load game leader board
+		loadScoreFromFile();
+//		
+//		// Du lieu gia
+//		listGameLeaderBoard.getTopScores().add(new GameLeaderBoard("William Cong", 4));
+//		listGameLeaderBoard.getTopScores().add(new GameLeaderBoard("Faith Issac", 8));
+//		listGameLeaderBoard.getTopScores().add(new GameLeaderBoard("Quan Nguyen", 16));
+//		listGameLeaderBoard.getTopScores().add(new GameLeaderBoard("Hanyuan Wu", 32));
+//		listGameLeaderBoard.getTopScores().add(new GameLeaderBoard("Michael Gira", 64));
+//		saveScoreToFile();
 	}
 
 	/**
@@ -92,7 +111,7 @@ public class Main extends Application {
 		Button leaderboardButton = new Button("Leaderboard", leaderboardIcon);
 //		leaderboardButton.setId("menu-button");
 		leaderboardButton.getStyleClass().add("small");
-		leaderboardButton.setOnAction(e -> renderLeaderboard(false));
+		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
 
 //		HBox menuButtons = new HBox(15, playButton, leaderboardButton);
 		VBox menuButtons = new VBox(15, playButton, leaderboardButton);
@@ -275,7 +294,20 @@ public class Main extends Application {
 
 			// Form submit behavior
 			EventHandler<ActionEvent> submitLeaderboard = e -> {
-				System.out.println("Register " + nameInput.getText() + " with a score of " + game.getScore());
+				if (game != null) {
+					System.out.println("Register " + nameInput.getText() + " with a score of " + game.getScore());
+					// get current score
+					PlayerScore currentScore = new PlayerScore(nameInput.getText(), game.getScore());
+					// check if this score is a high score
+					if (listGameLeaderBoard.isTopScore(currentScore)) {
+						// If the current score is the high one, take out the lowest one
+						listGameLeaderBoard.pollMinScore();
+						// Add current score to top score list
+						listGameLeaderBoard.addScoreToList(currentScore);
+						// save top score to file
+						saveScoreToFile();
+					}
+				}
 			};
 
 			nameInput.setOnAction(submitLeaderboard);
@@ -284,6 +316,7 @@ public class Main extends Application {
 			HBox form = new HBox(5, nameInput, submit);
 			form.setId("form");
 			centerLayout.getChildren().add(form);
+
 		}
 
 		// "Play Again" button
@@ -318,20 +351,23 @@ public class Main extends Application {
 		}
 
 		// Pretend high scores
-		Map<String, Integer> topScores = new LinkedHashMap<String, Integer>();
-		topScores.put("William Cong", 1194);
-		topScores.put("Faith Isaac", 1000);
-		topScores.put("Quan Nguyen", 870);
-		topScores.put("Hanyuan Wu", 512);
-		topScores.put("Michael Gira", 64);
+//		Map<String, Integer> topScores = new LinkedHashMap<String, Integer>();
+//		topScores.put("William Cong", 1194);
+//		topScores.put("Faith Isaac", 1000);
+//		topScores.put("Quan Nguyen", 870);
+//		topScores.put("Hanyuan Wu", 512);
+//		topScores.put("Michael Gira", 64);
 
 		VBox topScoresList = new VBox();
-		for (Map.Entry<String, Integer> entry : topScores.entrySet()) {
+		// sorting top score list
+		Object[] sortedScores = listGameLeaderBoard.sortedTopScores();
+		for (Object object : sortedScores) {
 
-			Label name = new Label(entry.getKey());
+			PlayerScore currentScore = (PlayerScore) object;
+			Label name = new Label(currentScore.getName());
 			name.setId("leaderboard-name");
 
-			Label score = new Label(Integer.toBinaryString(entry.getValue()));
+			Label score = new Label(Integer.toBinaryString(currentScore.getScore()));
 			score.setId("leaderboard-score");
 
 			// Filler element for spacing out other elements in an HBox
@@ -382,5 +418,40 @@ public class Main extends Application {
 		gameHeader.getChildren().addAll(title, subtitle);
 
 		return gameHeader;
+	}
+
+	// save top score list to file
+	public void saveScoreToFile() {
+		try {
+			FileOutputStream f = new FileOutputStream(new File("leaderboard.json"));
+			ObjectOutputStream o = new ObjectOutputStream(f);
+			o.writeObject(listGameLeaderBoard);
+			o.close();
+			f.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found");
+		} catch (IOException e) {
+			System.out.println("Error initializing stream");
+		}
+	}
+
+	// Read top score list from file
+	public void loadScoreFromFile() {
+		try {
+			FileInputStream fi = new FileInputStream(new File("leaderboard.json"));
+			ObjectInputStream oi = new ObjectInputStream(fi);
+			// Read objects
+			listGameLeaderBoard = (GameLeaderboard) oi.readObject();
+			System.out.println(listGameLeaderBoard.toString());
+			oi.close();
+			fi.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found");
+		} catch (IOException e) {
+			System.out.println("Error initializing stream");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
