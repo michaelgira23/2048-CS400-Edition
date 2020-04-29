@@ -18,6 +18,7 @@ public class Game {
 
 	static final int HEIGHT = 4;
 	static final int WIDTH = 4;
+	private Main main;
 	private int numOfSquare;
 	private int score = 0;
 	private GameSquare[][] board;
@@ -26,9 +27,10 @@ public class Game {
 	private SlideHandler slideHandler = null;
 	private boolean moved;
 
-	public Game(int seed) {
+	public Game(int seed, Main main) {
 		if(seed == 0) rnd = new Random();
 		else rnd = new Random(seed);
+		this.main = main;
 		score = 0;
 		numOfSquare = 0;
 		isGameOver = false;
@@ -75,7 +77,7 @@ public class Game {
 			}
 		}
 		// DEBUG
-		if(isGameOver && DEBUG) System.out.println("Game Over!");
+		if(isGameOver && DEBUG) main.gameOver();//System.out.println("Game Over!");
 	}
 
 	/**

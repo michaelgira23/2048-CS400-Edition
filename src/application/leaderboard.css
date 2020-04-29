@@ -41,10 +41,24 @@
 	-fx-border-radius: 5;
 }
 
+#submitted {
+	-fx-font-weight: bold;
+	-fx-text-fill: #4BB543;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-size: 14;
+	-fx-padding: 8 0 54 0;
+}
+
+#play-icon {
+	-fx-padding: 0 0 0 0;
+}
+
 #form-submit {
 }
 
 #play-again {
+	-fx-background-color: #FFF;
+	-fx-text-fill: #363062;
 }
 
 #leaderboard-header {
