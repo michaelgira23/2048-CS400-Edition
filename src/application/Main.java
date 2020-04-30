@@ -1,18 +1,11 @@
 package application;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -27,7 +20,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
@@ -49,11 +41,16 @@ public class Main extends Application {
 	private List<String> args;
 	private Stage primaryStage;
 
+	// Internal logic of the game
 	private Game game;
+
+	// Current game theme that renders the game tiles
 	private GameTheme currentTheme = new BinaryTheme();
 
+	// Default path to load leaderboard data JSON file
+	private String leaderboardPath = "leaderboard.json";
 	// Leader board score
-	private GameLeaderboard listGameLeaderboard = new GameLeaderboard();
+	private GameLeaderboard leaderboard;
 
 	/**
 	 * Sets up initial game screen
@@ -63,13 +60,15 @@ public class Main extends Application {
 		args = this.getParameters().getRaw();
 		System.out.println("Args: " + args);
 
+		leaderboard = GameLeaderboard.load(leaderboardPath);
+
 		this.primaryStage = primaryStage;
 		primaryStage.setTitle(APP_TITLE);
 		renderMenu();
 		primaryStage.show();
 
 		// Load game leader board
-		loadScoreFromFile();
+//		loadScoreFromFile();
 
 //		// Du lieu gia
 //		listGameLeaderboard.getTopScores().add(new PlayerScore("Faith Issac", 8));
@@ -149,14 +148,14 @@ public class Main extends Application {
 		// TODO: LeaderBoard should not be directly accessible from the game body
 		// , unless a "return" button is set, and a parameter showing whether it
 		// should display "Game Over"
-//		Button leaderboardButton = new Button("Leaderboard");
-//		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
+		Button leaderboardButton = new Button("Leaderboard");
+		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
 
 		// TODO: implement a restart button
 		Button menuButton = new Button("Menu");
 		menuButton.setOnAction(e -> renderMenu());
 
-		HBox actionButtons = new HBox(15, menuButton);
+		HBox actionButtons = new HBox(15, menuButton, leaderboardButton);
 		actionButtons.setAlignment(Pos.CENTER);
 
 		VBox gameHeader = new VBox();
@@ -274,9 +273,9 @@ public class Main extends Application {
 
 			Label scoreValue;
 			if (game == null) {
-				scoreValue = new Label(Integer.toBinaryString(0));
+				scoreValue = new Label(Long.toBinaryString(0));
 			} else {
-				scoreValue = new Label(Integer.toBinaryString(Math.max(game.getScore(), 0)));
+				scoreValue = new Label(Long.toBinaryString(Math.max(game.getScore(), 0)));
 			}
 			scoreValue.setId("score-value");
 
@@ -310,12 +309,17 @@ public class Main extends Application {
 			EventHandler<ActionEvent> submitLeaderboard = e -> {
 				if (game != null) {
 					System.out.println("Register " + nameInput.getText() + " with a score of " + game.getScore());
-					// get current score
+					// Get current score
 					PlayerScore currentScore = new PlayerScore(nameInput.getText(), game.getScore());
 					// Add current score to top score list
-					listGameLeaderboard.addScoreToList(currentScore);
-					// save top score to file
-					saveScoreToFile();
+					leaderboard.add(currentScore);
+					// Save top score to file
+					try {
+						leaderboard.export(leaderboardPath);
+					} catch (IOException e1) {
+						System.out.println("Error saving leaderboard to file!");
+						e1.printStackTrace();
+					}
 				}
 				centerLayout.getChildren().remove(form);
 				centerLayout.getChildren().add(2, submitted);
@@ -375,14 +379,12 @@ public class Main extends Application {
 
 		VBox topScoresList = new VBox();
 		// sorting top score list
-		Object[] sortedScores = listGameLeaderboard.sortedTopScores();
-		for (Object object : sortedScores) {
+		for (PlayerScore currentScore : leaderboard.getTopScores()) {
 
-			PlayerScore currentScore = (PlayerScore) object;
 			Label name = new Label(currentScore.getName());
 			name.setId("leaderboard-name");
 
-			Label score = new Label(Integer.toBinaryString(currentScore.getScore()));
+			Label score = new Label(Long.toBinaryString(currentScore.getScore()));
 			score.setId("leaderboard-score");
 
 			// Filler element for spacing out other elements in an HBox
@@ -435,38 +437,4 @@ public class Main extends Application {
 		return gameHeader;
 	}
 
-	// save top score list to file
-	public void saveScoreToFile() {
-		try {
-			FileOutputStream f = new FileOutputStream(new File("leaderboard.json"));
-			ObjectOutputStream o = new ObjectOutputStream(f);
-			o.writeObject(listGameLeaderboard);
-			o.close();
-			f.close();
-		} catch (FileNotFoundException e) {
-			System.out.println("File not found1");
-		} catch (IOException e) {
-			System.out.println("Error initializing stream");
-		}
-	}
-
-	// Read top score list from file
-	public void loadScoreFromFile() {
-		try {
-			FileInputStream fi = new FileInputStream(new File("leaderboard.json"));
-			ObjectInputStream oi = new ObjectInputStream(fi);
-			// Read objects
-			listGameLeaderboard = (GameLeaderboard) oi.readObject();
-			System.out.println(listGameLeaderboard.toString());
-			oi.close();
-			fi.close();
-		} catch (FileNotFoundException e) {
-			System.out.println("File not found2");
-		} catch (IOException e) {
-			System.out.println("Error initializing stream");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 }

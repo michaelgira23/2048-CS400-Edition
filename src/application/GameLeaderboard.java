@@ -1,9 +1,20 @@
 package application;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.PriorityQueue;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  * A list of the top player scores
@@ -14,82 +25,12 @@ import java.util.PriorityQueue;
 public class GameLeaderboard implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	public static void main(String[] args) {
-		// Creating an empty PriorityQueue
-		PriorityQueue<Integer> queue = new PriorityQueue<Integer>();
-
-		// Use add() method to add elements into the Queue
-		queue.add(10);
-		queue.add(15);
-		queue.add(30);
-		queue.add(20);
-		queue.add(5);
-		queue.add(25);
-		// Neu co it nhat 1 diem thi lay ra
-		// If at least 1 point is removed
-		Iterator<Integer> itr2 = queue.iterator();
-		// Diem thap nhat
-		Integer minScore = itr2.next();
-		while (itr2.hasNext()) {
-			// Diem dang duyet
-			// Unidirectional
-			Integer currentScore = itr2.next();
-			minScore = currentScore;
-			// So sanh diem dang duyet voi diem thap nhat
-			// Compose a checkpoint with the lowest point
-			if (currentScore < minScore) {
-				// Gan diem thap nhat bang diem dang duyet
-				// Please update the state with the checkpoint
-				minScore = currentScore;
-			}
-		}
-
-		// Displaying the PriorityQueue
-		System.out.println("The PriorityQueue: " + queue);
-
-		// Creating the array and using toArray()
-		Object[] arr = queue.toArray();
-
-		System.out.println("The array is:");
-		for (int j = 0; j < arr.length; j++)
-			System.out.println(arr[j]);
-
-		PriorityQueue<String> pQueue = new PriorityQueue<>();
-
-		// Adding items to the pQueue using add()
-		pQueue.add("70");
-		pQueue.add("20");
-		pQueue.add("50");
-		pQueue.add("40");
-		pQueue.add("80");
-		pQueue.add("20");
-
-		System.out.println("Phan tu dau tien:" + pQueue.peek());
-		// Sap xep priority queue
-		Object[] pQArray = pQueue.toArray();
-		Arrays.sort(pQArray);
-		for (Object string : pQArray) {
-			System.out.println(string.toString());
-		}
-
-		System.out.println("Queue: ");
-		Iterator itr = pQueue.iterator();
-		while (itr.hasNext())
-			System.out.println(itr.next());
-
-		pQueue.remove("G");
-		System.out.println("Sau khi xoa phan tu G");
-		Iterator<String> itr3 = pQueue.iterator();
-		while (itr3.hasNext())
-			System.out.println(itr3.next());
-
-	}
-
 	// Priority game leader board
 	private PriorityQueue<PlayerScore> topScores = new PriorityQueue<PlayerScore>();
 
 	/**
 	 * Check if current score is in top score
+	 * 
 	 * @param currentScore
 	 * @return whether or not it is
 	 */
@@ -105,52 +46,122 @@ public class GameLeaderboard implements Serializable {
 
 		return false;
 	}
-	
+
 	/**
 	 * Sorts topScores by timestamp
+	 * 
 	 * @return tSort array of topScores sorted by timestamp using comparator
 	 */
 	public PlayerScore[] sortedTopScoresByTime() {
 		PlayerScore[] tSort = new PlayerScore[topScores.size()];
-		int i = 0;
-		for(PlayerScore temp: topScores) {
-			tSort[i] = temp;
-			i++;
-		}
+		topScores.toArray(tSort);
+		Arrays.sort(tSort);
 		Arrays.sort(tSort, new sortByTime());
 		return tSort;
 	}
-	/**
-	 * Add score to the list
-	 * @param currentScore score to be added
-	 */
-	public void addScoreToList(PlayerScore currentScore) {
-		topScores.add(currentScore);
-	}
 
 	/**
-	 * Sorting top score list
-	 * @return pQArray array of scores sorted by score amount
+	 * Getter for topScores
+	 * 
+	 * @return topScores priority queue of top scorers
 	 */
-	public Object[] sortedTopScores() {
-		Object[] pQArray = topScores.toArray();
+	public PlayerScore[] getTopScores() {
+		PlayerScore[] pQArray = new PlayerScore[topScores.size()];
+		topScores.toArray(pQArray);
 		Arrays.sort(pQArray);
 		return pQArray;
 	}
 
 	/**
-	 * Getter for topScores
-	 * @return topScores priority queue of top scorers
+	 * Add score to the list
+	 * 
+	 * @param currentScore score to be added
 	 */
-	public PriorityQueue<PlayerScore> getTopScores() {
-		return topScores;
+	public void add(PlayerScore currentScore) {
+		topScores.add(currentScore);
 	}
 
 	/**
-	 * Setter method for topScores
-	 * @param topScores for topScores field to be set to
+	 * Save the current leaderboard into a specified JSON path.
+	 * 
+	 * @param jsonPath
+	 * @throws IOException
 	 */
-	public void setTopScores(PriorityQueue<PlayerScore> topScores) {
-		this.topScores = topScores;
+	@SuppressWarnings("unchecked")
+	public void export(String jsonPath) throws IOException {
+
+		JSONArray scores = new JSONArray();
+
+		for (PlayerScore score : getTopScores()) {
+			JSONObject scoreEntry = new JSONObject();
+			scoreEntry.put("name", score.getName());
+			scoreEntry.put("score", score.getScore());
+			scoreEntry.put("timestamp", score.getDate().getTime());
+			scores.add(scoreEntry);
+		}
+
+		JSONObject json = new JSONObject();
+		json.put("scores", scores);
+
+		try (FileWriter file = new FileWriter(jsonPath)) {
+			file.write(json.toJSONString());
+		}
+	}
+
+	/**
+	 * Loads a game leaderboard from a given path. If path doesn't exist, returns
+	 * empty leaderboard.
+	 * 
+	 * @param jsonPath Path to JSON file containing leaderboard data
+	 * @return GameLeaderboard instance with loaded scores, if they exist
+	 */
+	static GameLeaderboard load(String jsonPath) {
+		GameLeaderboard leaderboard = new GameLeaderboard();
+
+		try (Reader reader = new FileReader(jsonPath)) {
+			JSONObject json = (JSONObject) new JSONParser().parse(reader);
+			JSONArray scores = (JSONArray) json.get("scores");
+
+			if (scores != null) {
+				int i = 0;
+				for (Object scoreEntryObj : scores) {
+					JSONObject scoreEntry = (JSONObject) scoreEntryObj;
+
+					if (scoreEntry == null) {
+						continue;
+					}
+
+					String name = (String) scoreEntry.get("name");
+					Long score = (Long) scoreEntry.get("score");
+					Long timestamp = (Long) scoreEntry.get("timestamp");
+
+					if (name == null || score == null || timestamp == null) {
+						System.out.println("Missing leaderboard JSON property in entry " + i + ". Skipping.");
+						continue;
+					}
+
+					Date date = new Date(timestamp);
+					leaderboard.add(new PlayerScore(name, score, date));
+					i++;
+				}
+			}
+
+			System.out.println("Successfully loaded " + leaderboard.getTopScores().length + " score(s).");
+
+		} catch (FileNotFoundException e) {
+			// If file not found
+			System.out.println("Leaderboard file not found. Creating a new one.");
+		} catch (IOException e) {
+			// Error reading file
+			System.out.println("Error reading leaderboard file. Creating a new one.");
+		} catch (ParseException e) {
+			// Invalid JSON syntax
+			System.out.println("Invalid leaderboard JSON syntax. Creating a new one.");
+		} catch (ClassCastException e) {
+			// If JSON structure is not as expected
+			System.out.println("Unexpected leaderboard JSON structure. Creating a new one.");
+		}
+
+		return leaderboard;
 	}
 }
