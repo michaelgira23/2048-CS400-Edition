@@ -88,7 +88,11 @@ public class GameLeaderboard implements Serializable {
 	// Priority game leader board
 	private PriorityQueue<PlayerScore> topScores = new PriorityQueue<PlayerScore>();
 
-	// Check if the current score is in top score
+	/**
+	 * Check if current score is in top score
+	 * @param currentScore
+	 * @return whether or not it is
+	 */
 	public boolean isTopScore(PlayerScore currentScore) {
 		Iterator<PlayerScore> topScoresIterator = topScores.iterator();
 		while (topScoresIterator.hasNext()) {
@@ -102,7 +106,10 @@ public class GameLeaderboard implements Serializable {
 		return false;
 	}
 	
-	// Sorts topScores by timestamp
+	/**
+	 * Sorts topScores by timestamp
+	 * @return tSort array of topScores sorted by timestamp using comparator
+	 */
 	public PlayerScore[] sortedTopScoresByTime() {
 		PlayerScore[] tSort = new PlayerScore[topScores.size()];
 		int i = 0;
@@ -114,22 +121,36 @@ public class GameLeaderboard implements Serializable {
 		return tSort;
 	}
 
-	// Add score to the list
+	/**
+	 * Add score to the list
+	 * @param currentScore score to be added
+	 */
 	public void addScoreToList(PlayerScore currentScore) {
 		topScores.add(currentScore);
 	}
 
-	// Sorting top score list
+	/**
+	 * Sorting top score list
+	 * @return pQArray array of scores sorted by score amount
+	 */
 	public Object[] sortedTopScores() {
 		Object[] pQArray = topScores.toArray();
 		Arrays.sort(pQArray);
 		return pQArray;
 	}
 
+	/**
+	 * Getter for topScores
+	 * @return topScores priority queue of top scorers
+	 */
 	public PriorityQueue<PlayerScore> getTopScores() {
 		return topScores;
 	}
 
+	/**
+	 * Setter method for topScores
+	 * @param topScores for topScores field to be set to
+	 */
 	public void setTopScores(PriorityQueue<PlayerScore> topScores) {
 		this.topScores = topScores;
 	}
