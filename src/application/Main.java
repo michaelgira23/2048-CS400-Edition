@@ -1,10 +1,6 @@
 package application;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 import javafx.application.Application;
@@ -152,14 +148,14 @@ public class Main extends Application {
 		// TODO: LeaderBoard should not be directly accessible from the game body
 		// , unless a "return" button is set, and a parameter showing whether it
 		// should display "Game Over"
-//		Button leaderboardButton = new Button("Leaderboard");
-//		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
+		Button leaderboardButton = new Button("Leaderboard");
+		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
 
 		// TODO: implement a restart button
 		Button menuButton = new Button("Menu");
 		menuButton.setOnAction(e -> renderMenu());
 
-		HBox actionButtons = new HBox(15, menuButton);
+		HBox actionButtons = new HBox(15, menuButton, leaderboardButton);
 		actionButtons.setAlignment(Pos.CENTER);
 
 		VBox gameHeader = new VBox();
@@ -313,12 +309,17 @@ public class Main extends Application {
 			EventHandler<ActionEvent> submitLeaderboard = e -> {
 				if (game != null) {
 					System.out.println("Register " + nameInput.getText() + " with a score of " + game.getScore());
-					// get current score
+					// Get current score
 					PlayerScore currentScore = new PlayerScore(nameInput.getText(), game.getScore());
 					// Add current score to top score list
 					leaderboard.add(currentScore);
-					// save top score to file
-					saveScoreToFile();
+					// Save top score to file
+					try {
+						leaderboard.export(leaderboardPath);
+					} catch (IOException e1) {
+						System.out.println("Error saving leaderboard to file!");
+						e1.printStackTrace();
+					}
 				}
 				centerLayout.getChildren().remove(form);
 				centerLayout.getChildren().add(2, submitted);
@@ -379,7 +380,6 @@ public class Main extends Application {
 		VBox topScoresList = new VBox();
 		// sorting top score list
 		for (PlayerScore currentScore : leaderboard.getTopScores()) {
-			System.out.println("Order: " + currentScore.getName());
 
 			Label name = new Label(currentScore.getName());
 			name.setId("leaderboard-name");
@@ -435,21 +435,6 @@ public class Main extends Application {
 		gameHeader.getChildren().addAll(title, subtitle);
 
 		return gameHeader;
-	}
-
-	// save top score list to file
-	public void saveScoreToFile() {
-		try {
-			FileOutputStream f = new FileOutputStream(new File("leaderboard.json"));
-			ObjectOutputStream o = new ObjectOutputStream(f);
-			o.writeObject(leaderboard);
-			o.close();
-			f.close();
-		} catch (FileNotFoundException e) {
-			System.out.println("File not found1");
-		} catch (IOException e) {
-			System.out.println("Error initializing stream");
-		}
 	}
 
 }

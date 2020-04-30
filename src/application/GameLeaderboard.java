@@ -2,6 +2,7 @@ package application;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
@@ -78,6 +79,33 @@ public class GameLeaderboard implements Serializable {
 	 */
 	public void add(PlayerScore currentScore) {
 		topScores.add(currentScore);
+	}
+
+	/**
+	 * Save the current leaderboard into a specified JSON path.
+	 * 
+	 * @param jsonPath
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	public void export(String jsonPath) throws IOException {
+
+		JSONArray scores = new JSONArray();
+
+		for (PlayerScore score : getTopScores()) {
+			JSONObject scoreEntry = new JSONObject();
+			scoreEntry.put("name", score.getName());
+			scoreEntry.put("score", score.getScore());
+			scoreEntry.put("timestamp", score.getDate().getTime());
+			scores.add(scoreEntry);
+		}
+
+		JSONObject json = new JSONObject();
+		json.put("scores", scores);
+
+		try (FileWriter file = new FileWriter(jsonPath)) {
+			file.write(json.toJSONString());
+		}
 	}
 
 	/**
