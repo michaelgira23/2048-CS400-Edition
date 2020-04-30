@@ -8,11 +8,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -27,7 +27,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
@@ -49,11 +48,16 @@ public class Main extends Application {
 	private List<String> args;
 	private Stage primaryStage;
 
+	// Internal logic of the game
 	private Game game;
+
+	// Current game theme that renders the game tiles
 	private GameTheme currentTheme = new BinaryTheme();
 
+	// Default path to load leaderboard data JSON file
+	private String leaderboardPath = "leaderboard.json";
 	// Leader board score
-	private GameLeaderboard listGameLeaderboard = new GameLeaderboard();
+	private GameLeaderboard leaderboard;
 
 	/**
 	 * Sets up initial game screen
@@ -313,7 +317,7 @@ public class Main extends Application {
 					// get current score
 					PlayerScore currentScore = new PlayerScore(nameInput.getText(), game.getScore());
 					// Add current score to top score list
-					listGameLeaderboard.addScoreToList(currentScore);
+					leaderboard.addScoreToList(currentScore);
 					// save top score to file
 					saveScoreToFile();
 				}
@@ -375,10 +379,9 @@ public class Main extends Application {
 
 		VBox topScoresList = new VBox();
 		// sorting top score list
-		Object[] sortedScores = listGameLeaderboard.sortedTopScores();
-		for (Object object : sortedScores) {
+		PriorityQueue<PlayerScore> sortedScores = leaderboard.getTopScores();
+		for (PlayerScore currentScore : sortedScores) {
 
-			PlayerScore currentScore = (PlayerScore) object;
 			Label name = new Label(currentScore.getName());
 			name.setId("leaderboard-name");
 
@@ -440,7 +443,7 @@ public class Main extends Application {
 		try {
 			FileOutputStream f = new FileOutputStream(new File("leaderboard.json"));
 			ObjectOutputStream o = new ObjectOutputStream(f);
-			o.writeObject(listGameLeaderboard);
+			o.writeObject(leaderboard);
 			o.close();
 			f.close();
 		} catch (FileNotFoundException e) {
@@ -456,8 +459,8 @@ public class Main extends Application {
 			FileInputStream fi = new FileInputStream(new File("leaderboard.json"));
 			ObjectInputStream oi = new ObjectInputStream(fi);
 			// Read objects
-			listGameLeaderboard = (GameLeaderboard) oi.readObject();
-			System.out.println(listGameLeaderboard.toString());
+			leaderboard = (GameLeaderboard) oi.readObject();
+			System.out.println(leaderboard.toString());
 			oi.close();
 			fi.close();
 		} catch (FileNotFoundException e) {
