@@ -26,16 +26,20 @@ public class GameLeaderboard implements Serializable {
 		queue.add(5);
 		queue.add(25);
 		// Neu co it nhat 1 diem thi lay ra
+		// If at least 1 point is removed
 		Iterator<Integer> itr2 = queue.iterator();
 		// Diem thap nhat
 		Integer minScore = itr2.next();
 		while (itr2.hasNext()) {
 			// Diem dang duyet
+			// Unidirectional
 			Integer currentScore = itr2.next();
 			minScore = currentScore;
 			// So sanh diem dang duyet voi diem thap nhat
+			// Compose a checkpoint with the lowest point
 			if (currentScore < minScore) {
 				// Gan diem thap nhat bang diem dang duyet
+				// Please update the state with the checkpoint
 				minScore = currentScore;
 			}
 		}
