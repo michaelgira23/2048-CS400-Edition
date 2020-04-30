@@ -113,14 +113,13 @@ public class GameLeaderboard implements Serializable {
 	public PlayerScore[] sortedTopScoresByTime() {
 		PlayerScore[] tSort = new PlayerScore[topScores.size()];
 		int i = 0;
-		for(dateObj temp: topScores) {
-			toSort[i] = temp;
+		for(PlayerScore temp: topScores) {
+			tSort[i] = temp;
 			i++;
 		}
-		Arrays.sort(dates, new sortByTime());
+		Arrays.sort(tSort, new sortByTime());
 		return tSort;
 	}
-
 	/**
 	 * Add score to the list
 	 * @param currentScore score to be added
