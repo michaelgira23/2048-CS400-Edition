@@ -65,7 +65,10 @@ public class Game {
 		}
 	}
 
-
+	/**
+	 * Helper method checking if game is over based on whether there's any other option
+	 * left to slide.
+	 */
 	private void checkGameOver(){
 		isGameOver = true;
 		for(int row = 0; row < HEIGHT; row++){
@@ -104,6 +107,11 @@ public class Game {
 		if(moved) squareGen();
 	}
 
+	/**
+	 * Helper method if board is shifted left
+	 *
+	 * @return List<SlideEvent> slide events to be executed
+	 */ 
 	private List<SlideEvent> mergeLeft() {
 		List<SlideEvent> slides = new LinkedList<SlideEvent>();
 		for(int row = 0; row < HEIGHT; row++){
@@ -137,6 +145,11 @@ public class Game {
 		return slides;
 	}
 
+	/**
+	 * Helper method if board is shifted down
+	 *
+	 * @return List<SlideEvent> slide events to be executed
+	 */ 
 	private List<SlideEvent> mergeDown() {
 		List<SlideEvent> slides = new LinkedList<SlideEvent>();
 		for(int col = WIDTH-1; col >= 0; col--){
@@ -169,6 +182,11 @@ public class Game {
 		return slides;
 	}
 
+	/**
+	 * Helper method if board is shifted up
+	 *
+	 * @return List<SlideEvent> slide events to be executed
+	 */ 
 	private List<SlideEvent> mergeUp() {
 		List<SlideEvent> slides = new LinkedList<SlideEvent>();
 		for(int col = 0; col < WIDTH; col++){
@@ -201,6 +219,11 @@ public class Game {
 		return slides;
 	}
 
+	/**
+	 * Helper method if board is shifted right
+	 *
+	 * @return List<SlideEvent> slide events to be executed
+	 */ 
 	private List<SlideEvent> mergeRight() {
 		List<SlideEvent> slides = new LinkedList<SlideEvent>();
 		for(int row = HEIGHT-1; row >= 0 ; row--){
@@ -263,6 +286,9 @@ public class Game {
 	 */
 	public GameSquare[][] getBoard() { return board; }
 
+	/**
+	 * Method to print state of board with '/' for empty slots
+	 */
 	public void print() {
 		for (int r = 0; r < HEIGHT; r++) {
 			for (int c = 0; c < WIDTH; c++) {
