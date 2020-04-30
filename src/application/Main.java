@@ -113,7 +113,7 @@ public class Main extends Application {
 		Button leaderboardButton = new Button(" Leaderboard", leaderboardIcon);
 //		leaderboardButton.setId("menu-button");
 		leaderboardButton.getStyleClass().add("small");
-		leaderboardButton.setOnAction(e -> renderLeaderboard(false));
+		leaderboardButton.setOnAction(e -> renderLeaderboard(false, 1));
 
 //		HBox menuButtons = new HBox(15, playButton, leaderboardButton);
 		VBox menuButtons = new VBox(20, playButton, leaderboardButton);
@@ -152,11 +152,27 @@ public class Main extends Application {
 //		Button leaderboardButton = new Button("Leaderboard");
 //		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
 
-		// TODO: implement a restart button
+		ImageView backIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/back-icon.png")));
+		backIcon.setId("back-icon");
+		backIcon.setPreserveRatio(true);
+		backIcon.setFitWidth(12);
+		
 		Button menuButton = new Button("Menu");
+		menuButton.setId("menu-small");
 		menuButton.setOnAction(e -> renderMenu());
+		
+		ImageView restartIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/restart-icon.png")));
+		restartIcon.setId("restart-icon");
+		restartIcon.setPreserveRatio(true);
+		restartIcon.setFitWidth(24);
+		Button restartButton = new Button("", restartIcon);
+		restartButton.setId("restart");
+		restartButton.setOnAction(e -> renderGameWithTheme(theme));
+		
+		Region spacer = new Region();
+		HBox.setHgrow(spacer, Priority.ALWAYS);
 
-		HBox actionButtons = new HBox(15, menuButton);
+		HBox actionButtons = new HBox(330, menuButton, restartButton);
 		actionButtons.setAlignment(Pos.CENTER);
 
 		VBox gameHeader = new VBox();
@@ -201,7 +217,7 @@ public class Main extends Application {
 	}
 
 	public void gameOver() {
-		renderLeaderboard(true);
+		renderLeaderboard(true, 1);
 	}
 
 	/**
@@ -249,7 +265,7 @@ public class Main extends Application {
 	 * @param inputScore Whether to display form for inputting user score;
 	 *                   otherwise, just display existing scores.
 	 */
-	private void renderLeaderboard(boolean inputScore) {
+	private void renderLeaderboard(boolean inputScore, int sortMode) {
 
 		// Center layout
 		VBox centerLayout = new VBox();
@@ -337,6 +353,10 @@ public class Main extends Application {
 		HBox actionButtons;
 
 		Button menuButton = new Button("Menu");
+		menuButton.setId("menu");
+		
+		int sMode = 1; // default 1 for ascending order
+		
 		menuButton.setOnAction(e -> renderMenu());
 
 		// does not display play button if its in leaderboard-only mode
@@ -350,9 +370,42 @@ public class Main extends Application {
 			playButton.setId("play-again");
 			playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
 
-			actionButtons = new HBox(15, playButton, menuButton);
+			actionButtons = new HBox(15, menuButton, playButton);
+			
 		} else {
-			actionButtons = new HBox(15, menuButton);
+			ImageView sortIcon = null;
+			if (sortMode == 1) {
+				sortIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/sort-asc-icon.png")));
+			} else if (sortMode == 2){
+				sortIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/sort-dsc-icon.png")));
+			}
+			sortIcon.setId("sort-icon");
+			sortIcon.setPreserveRatio(true);
+			sortIcon.setFitWidth(14);
+			
+			Button sortButton = new Button("", sortIcon);
+			sortButton.setId("sort");
+			
+			sortButton.setOnAction(e -> {
+				if (sortMode == 1) {
+					renderLeaderboard(false, 2);
+				} else if (sortMode == 2) {
+					renderLeaderboard(false, 1);
+				}
+			});
+			
+			ImageView backIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/back-icon.png")));
+			backIcon.setId("back-icon");
+			backIcon.setPreserveRatio(true);
+			backIcon.setFitWidth(6);
+			
+			menuButton = new Button(" Menu", backIcon);
+			menuButton.setId("menu-small");
+			menuButton.setOnAction(e -> renderMenu());
+			
+			Region spacer = new Region();
+			HBox.setHgrow(spacer, Priority.ALWAYS);
+			actionButtons = new HBox(15, menuButton, spacer, sortButton);
 		}
 		actionButtons.setAlignment(Pos.CENTER);
 
@@ -364,20 +417,34 @@ public class Main extends Application {
 			topScoresHeader.setId("leaderboard-header");
 			centerLayout.getChildren().add(topScoresHeader);
 		}
-
-		// Pretend high scores
-//		Map<String, Integer> topScores = new LinkedHashMap<String, Integer>();
-//		topScores.put("William Cong", 1194);
-//		topScores.put("Faith Isaac", 1000);
-//		topScores.put("Quan Nguyen", 870);
-//		topScores.put("Hanyuan Wu", 512);
-//		topScores.put("Michael Gira", 64);
-
+		
 		VBox topScoresList = new VBox();
-		// sorting top score list
-		Object[] sortedScores = listGameLeaderboard.sortedTopScores();
-		for (Object object : sortedScores) {
+		// sorting top score list; default = 1 (ascending order)
+		if (inputScore) {
+			listScores(topScoresList, sortMode, 5);
+		} else {
+			listScores(topScoresList, sortMode, 15);
+		}
+		centerLayout.getChildren().add(topScoresList);
 
+		// Entire page layout
+		BorderPane menuLayout = new BorderPane();
+		menuLayout.setCenter(centerLayout);
+
+		Scene leaderboardScene = new Scene(menuLayout, WINDOW_WIDTH, WINDOW_HEIGHT);
+		leaderboardScene.getStylesheets().addAll("application/application.css", "application/leaderboard.css");
+		primaryStage.setScene(leaderboardScene);
+	}
+	
+	/*
+	 * @param sorting mode
+	 */
+	private void listScores(VBox list, int mode, int numToList) {
+		
+		Object[] sortedScores = listGameLeaderboard.sortedTopScores(mode);
+
+		for (int i = 0; i < Math.min(numToList, sortedScores.length); i++) {
+			Object object = sortedScores[i];
 			PlayerScore currentScore = (PlayerScore) object;
 			Label name = new Label(currentScore.getName());
 			name.setId("leaderboard-name");
@@ -391,17 +458,8 @@ public class Main extends Application {
 
 			HBox row = new HBox(name, spacer, score);
 			row.setId("leaderboard-player");
-			topScoresList.getChildren().add(row);
+			list.getChildren().add(row);
 		}
-		centerLayout.getChildren().add(topScoresList);
-
-		// Entire page layout
-		BorderPane menuLayout = new BorderPane();
-		menuLayout.setCenter(centerLayout);
-
-		Scene leaderboardScene = new Scene(menuLayout, WINDOW_WIDTH, WINDOW_HEIGHT);
-		leaderboardScene.getStylesheets().addAll("application/application.css", "application/leaderboard.css");
-		primaryStage.setScene(leaderboardScene);
 	}
 
 	/**

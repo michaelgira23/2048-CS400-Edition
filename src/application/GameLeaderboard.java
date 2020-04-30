@@ -2,6 +2,7 @@ package application;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 
@@ -132,11 +133,19 @@ public class GameLeaderboard implements Serializable {
 	 * Sorting top score list
 	 * @return pQArray array of scores sorted by score amount
 	 */
-	public Object[] sortedTopScores() {
+	public Object[] sortedTopScores(int mode) {
 		Object[] pQArray = topScores.toArray();
-		Arrays.sort(pQArray);
+		if (mode == 1) {
+			Arrays.sort(pQArray);
+		} else if (mode == 2) {
+			Arrays.sort(pQArray, Collections.reverseOrder()); 
+		} else {
+			throw new UnsupportedOperationException();
+		}
 		return pQArray;
 	}
+	
+
 
 	/**
 	 * Getter for topScores

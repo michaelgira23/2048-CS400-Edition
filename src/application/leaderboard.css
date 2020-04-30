@@ -4,7 +4,7 @@
 }
 
 #leaderboard-title {
-	-fx-padding: 24 0 12 0;
+	-fx-padding: 24 0 22 0;
 	-fx-text-fill: #363062;
 	-fx-font-family: 'Inconsolata';
 	-fx-font-weight: bold;
@@ -13,6 +13,18 @@
 
 #score-container {
 	-fx-padding: 0 0 16 0;
+}
+
+#sort {
+	-fx-padding: 12 4 12 0;
+	-fx-background-color: none;
+	-fx-background-radius: none;
+}
+
+#menu-small {
+	-fx-padding: 6 12 6 12;
+	/* -fx-background-color: white;
+	-fx-text-fill: #4D4C7D; */
 }
 
 #score-label {
@@ -27,7 +39,6 @@
 	-fx-font-family: 'Inconsolata';
 	-fx-font-size: 18;
 }
-
 #form {
 	-fx-padding: 0 0 48 0;
 }
@@ -42,7 +53,6 @@
 }
 
 #submitted {
-	-fx-font-weight: bold;
 	-fx-text-fill: #4BB543;
 	-fx-font-family: 'Inconsolata';
 	-fx-font-size: 14;
@@ -62,7 +72,7 @@
 }
 
 #leaderboard-header {
-	-fx-padding: 48 0 0 12;
+	-fx-padding: 48 0 12 12;
 	
 	-fx-text-fill: #4D4C7D;
 	-fx-font-family: 'Inconsolata';

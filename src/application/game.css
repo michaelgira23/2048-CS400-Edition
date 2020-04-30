@@ -1,11 +1,23 @@
 #title {
 	font-size: 48;
+	-fx-padding: 36 0 0 0;
 }
 
 #instructions {
 	-fx-padding: 24 32 32 32;
 	-fx-font-family: 'Inconsolata';
 	-fx-font-size: 14;
+}
+
+#restart {
+	-fx-padding: 0 0 0 8;
+	-fx-background-color: none;
+}
+
+#menu-small {
+	-fx-padding: 8 16 8 16;
+	-fx-background-color: #4D4C7D;
+	-fx-text-fill: white;
 }
 
 .instructions-text {
