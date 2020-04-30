@@ -101,6 +101,18 @@ public class GameLeaderboard implements Serializable {
 
 		return false;
 	}
+	
+	// Sorts topScores by timestamp
+	public PlayerScore[] sortedTopScoresByTime() {
+		PlayerScore[] tSort = new PlayerScore[topScores.size()];
+		int i = 0;
+		for(dateObj temp: topScores) {
+			toSort[i] = temp;
+			i++;
+		}
+		Arrays.sort(dates, new sortByTime());
+		return tSort;
+	}
 
 	// Add score to the list
 	public void addScoreToList(PlayerScore currentScore) {
