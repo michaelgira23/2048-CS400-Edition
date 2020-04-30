@@ -5,24 +5,30 @@
  *
  */
 package application;
+
 import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Represents a player's name and their high score
+ * 
  * @author Quan
  *
  */
 public class PlayerScore implements Comparable<PlayerScore>, Serializable {
 	private static final long serialVersionUID = 1L;
 	private String name;
-	private int score;
+	private Long score;
 	private Date date;
 
-	public PlayerScore(String name, int score) {
+	public PlayerScore(String name, Long score) {
+		this(name, score, new Date());
+	}
+
+	public PlayerScore(String name, Long score, Date date) {
 		this.name = name;
 		this.score = score;
-		this.date = new Date();
+		this.date = date;
 	}
 
 	public String getName() {
@@ -33,14 +39,14 @@ public class PlayerScore implements Comparable<PlayerScore>, Serializable {
 		this.name = name;
 	}
 
-	public int getScore() {
+	public Long getScore() {
 		return score;
 	}
 
-	public void setScore(int score) {
+	public void setScore(Long score) {
 		this.score = score;
 	}
-	
+
 	public Date getDate() {
 		return date;
 	}
@@ -49,18 +55,13 @@ public class PlayerScore implements Comparable<PlayerScore>, Serializable {
 	// Tra ve -1 neu game leader board kia nho hon (game leader board nay lon hon)
 	/**
 	 * Compares score to the score of another given PlayerScore
+	 * 
 	 * @param o PlayerScore to be compared with
 	 * @return -1 if personal score is higher, 0 if it's equal, and 1 if it's lower
 	 */
 	@Override
 	public int compareTo(PlayerScore o) {
-		if (this.score > o.score) {
-			return -1;
-		} else if (this.score < o.score) {
-			return 1;
-		} else {
-			return 0;
-		}
+		return o.score.compareTo(score);
 	}
 
 }

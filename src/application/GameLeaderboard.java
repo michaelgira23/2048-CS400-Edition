@@ -3,11 +3,14 @@ package application;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -50,22 +53,10 @@ public class GameLeaderboard implements Serializable {
 	 */
 	public PlayerScore[] sortedTopScoresByTime() {
 		PlayerScore[] tSort = new PlayerScore[topScores.size()];
-		int i = 0;
-		for (PlayerScore temp : topScores) {
-			tSort[i] = temp;
-			i++;
-		}
+		topScores.toArray(tSort);
+		Arrays.sort(tSort);
 		Arrays.sort(tSort, new sortByTime());
 		return tSort;
-	}
-
-	/**
-	 * Add score to the list
-	 * 
-	 * @param currentScore score to be added
-	 */
-	public void addScoreToList(PlayerScore currentScore) {
-		topScores.add(currentScore);
 	}
 
 	/**
@@ -73,17 +64,20 @@ public class GameLeaderboard implements Serializable {
 	 * 
 	 * @return topScores priority queue of top scorers
 	 */
-	public PriorityQueue<PlayerScore> getTopScores() {
-		return topScores;
+	public PlayerScore[] getTopScores() {
+		PlayerScore[] pQArray = new PlayerScore[topScores.size()];
+		topScores.toArray(pQArray);
+		Arrays.sort(pQArray);
+		return pQArray;
 	}
 
 	/**
-	 * Setter method for topScores
+	 * Add score to the list
 	 * 
-	 * @param topScores for topScores field to be set to
+	 * @param currentScore score to be added
 	 */
-	public void setTopScores(PriorityQueue<PlayerScore> topScores) {
-		this.topScores = topScores;
+	public void add(PlayerScore currentScore) {
+		topScores.add(currentScore);
 	}
 
 	/**
@@ -96,18 +90,50 @@ public class GameLeaderboard implements Serializable {
 	static GameLeaderboard load(String jsonPath) {
 		GameLeaderboard leaderboard = new GameLeaderboard();
 
-		try {
-			JSONObject json = (JSONObject) new JSONParser().parse(new FileReader(jsonPath));
+		try (Reader reader = new FileReader(jsonPath)) {
+			JSONObject json = (JSONObject) new JSONParser().parse(reader);
+			JSONArray scores = (JSONArray) json.get("scores");
+
+			if (scores != null) {
+				int i = 0;
+				for (Object scoreEntryObj : scores) {
+					JSONObject scoreEntry = (JSONObject) scoreEntryObj;
+
+					if (scoreEntry == null) {
+						continue;
+					}
+
+					String name = (String) scoreEntry.get("name");
+					Long score = (Long) scoreEntry.get("score");
+					Long timestamp = (Long) scoreEntry.get("timestamp");
+
+					if (name == null || score == null || timestamp == null) {
+						System.out.println("Missing leaderboard JSON property in entry " + i + ". Skipping.");
+						continue;
+					}
+
+					Date date = new Date(timestamp);
+					leaderboard.add(new PlayerScore(name, score, date));
+					i++;
+				}
+			}
+
+			System.out.println("Successfully loaded " + leaderboard.getTopScores().length + " score(s).");
+
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// If file not found
+			System.out.println("Leaderboard file not found. Creating a new one.");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// Error reading file
+			System.out.println("Error reading leaderboard file. Creating a new one.");
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// Invalid JSON syntax
+			System.out.println("Invalid leaderboard JSON syntax. Creating a new one.");
+		} catch (ClassCastException e) {
+			// If JSON structure is not as expected
+			System.out.println("Unexpected leaderboard JSON structure. Creating a new one.");
 		}
+
 		return leaderboard;
 	}
 }

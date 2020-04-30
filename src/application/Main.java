@@ -1,14 +1,11 @@
 package application;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
-import java.util.PriorityQueue;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -67,13 +64,15 @@ public class Main extends Application {
 		args = this.getParameters().getRaw();
 		System.out.println("Args: " + args);
 
+		leaderboard = GameLeaderboard.load(leaderboardPath);
+
 		this.primaryStage = primaryStage;
 		primaryStage.setTitle(APP_TITLE);
 		renderMenu();
 		primaryStage.show();
 
 		// Load game leader board
-		loadScoreFromFile();
+//		loadScoreFromFile();
 
 //		// Du lieu gia
 //		listGameLeaderboard.getTopScores().add(new PlayerScore("Faith Issac", 8));
@@ -278,9 +277,9 @@ public class Main extends Application {
 
 			Label scoreValue;
 			if (game == null) {
-				scoreValue = new Label(Integer.toBinaryString(0));
+				scoreValue = new Label(Long.toBinaryString(0));
 			} else {
-				scoreValue = new Label(Integer.toBinaryString(Math.max(game.getScore(), 0)));
+				scoreValue = new Label(Long.toBinaryString(Math.max(game.getScore(), 0)));
 			}
 			scoreValue.setId("score-value");
 
@@ -317,7 +316,7 @@ public class Main extends Application {
 					// get current score
 					PlayerScore currentScore = new PlayerScore(nameInput.getText(), game.getScore());
 					// Add current score to top score list
-					leaderboard.addScoreToList(currentScore);
+					leaderboard.add(currentScore);
 					// save top score to file
 					saveScoreToFile();
 				}
@@ -379,13 +378,13 @@ public class Main extends Application {
 
 		VBox topScoresList = new VBox();
 		// sorting top score list
-		PriorityQueue<PlayerScore> sortedScores = leaderboard.getTopScores();
-		for (PlayerScore currentScore : sortedScores) {
+		for (PlayerScore currentScore : leaderboard.getTopScores()) {
+			System.out.println("Order: " + currentScore.getName());
 
 			Label name = new Label(currentScore.getName());
 			name.setId("leaderboard-name");
 
-			Label score = new Label(Integer.toBinaryString(currentScore.getScore()));
+			Label score = new Label(Long.toBinaryString(currentScore.getScore()));
 			score.setId("leaderboard-score");
 
 			// Filler element for spacing out other elements in an HBox
@@ -453,23 +452,4 @@ public class Main extends Application {
 		}
 	}
 
-	// Read top score list from file
-	public void loadScoreFromFile() {
-		try {
-			FileInputStream fi = new FileInputStream(new File("leaderboard.json"));
-			ObjectInputStream oi = new ObjectInputStream(fi);
-			// Read objects
-			leaderboard = (GameLeaderboard) oi.readObject();
-			System.out.println(leaderboard.toString());
-			oi.close();
-			fi.close();
-		} catch (FileNotFoundException e) {
-			System.out.println("File not found2");
-		} catch (IOException e) {
-			System.out.println("Error initializing stream");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 }
