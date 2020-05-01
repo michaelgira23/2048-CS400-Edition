@@ -53,6 +53,7 @@ public class Main extends Application {
 	FileChooser fileChooser = new FileChooser();
 	// Default path to load leaderboard data JSON file
 	private String leaderboardPath = "leaderboard.json";
+	private boolean isDefaultLeaderboardPath = true;
 	// Leader board score
 	private GameLeaderboard leaderboard;
 
@@ -111,13 +112,15 @@ public class Main extends Application {
 		leaderboardButton.setOnAction(e -> renderLeaderboard(false, GameLeaderboardSortMode.Score));
 
 		// File selector for leaderboard JSON file
-		Label leaderboardPathLabel = new Label(leaderboardPath);
+		Label leaderboardPathLabel = new Label(
+				isDefaultLeaderboardPath ? "Default: " + leaderboardPath : leaderboardPath);
 		Button chooseLeaderboardPath = new Button("Load Leaderboard File");
 		chooseLeaderboardPath.setOnAction(e -> {
 			File file = fileChooser.showOpenDialog(primaryStage);
 			if (file != null) {
 				leaderboardPath = file.getPath();
 				leaderboardPathLabel.setText(leaderboardPath);
+				isDefaultLeaderboardPath = false;
 			}
 		});
 		VBox leaderboardSelect = new VBox(15, chooseLeaderboardPath, leaderboardPathLabel);
