@@ -13,11 +13,11 @@ On a 4x4 playing board, the player can slide all the squares up, down, right, an
 ## Screenshots
 
 <p align="center">
-<img src="screenshot-menu.png" alt="Screenshot of the menu screen" width="75%">
+<img src="screenshot-menu.png" alt="Screenshot of the menu screen" width="50%">
 
-<img src="screenshot-game.png" alt="Screenshot of the game screen" width="75%">
+<img src="screenshot-game.png" alt="Screenshot of the game screen" width="50%">
 
-<img src="screenshot-leaderboard.png" alt="Screenshot of the leaderboard screen" width="75%">
+<img src="screenshot-leaderboard.png" alt="Screenshot of the leaderboard screen" width="50%">
 <p>
 
 ## The Team
