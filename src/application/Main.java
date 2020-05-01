@@ -120,7 +120,8 @@ public class Main extends Application {
 				leaderboardPathLabel.setText(leaderboardPath);
 			}
 		});
-		HBox leaderboardSelect = new HBox(15, leaderboardPathLabel, chooseLeaderboardPath);
+		VBox leaderboardSelect = new VBox(15, chooseLeaderboardPath, leaderboardPathLabel);
+		leaderboardSelect.setAlignment(Pos.CENTER);
 
 //		HBox menuButtons = new HBox(15, playButton, leaderboardButton);
 		VBox menuButtons = new VBox(20, playButton, leaderboardButton, leaderboardSelect);
@@ -157,9 +158,9 @@ public class Main extends Application {
 		// , unless a "return" button is set, and a parameter showing whether it
 		// should display "Game Over"
 
-		//MICHAELLLLLLLLLLLLLLLLLLLLLLLLLLLL LOOK HERE THIS IS YOUR CODE
-		//Button leaderboardButton = new Button("Leaderboard");
-		//leaderboardButton.setOnAction(e -> renderLeaderboard(true));
+		// MICHAELLLLLLLLLLLLLLLLLLLLLLLLLLLL LOOK HERE THIS IS YOUR CODE
+		// Button leaderboardButton = new Button("Leaderboard");
+		// leaderboardButton.setOnAction(e -> renderLeaderboard(true));
 
 		ImageView backIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/back-icon.png")));
 		backIcon.setId("back-icon");
@@ -389,7 +390,7 @@ public class Main extends Application {
 			ImageView sortIcon = null;
 			if (sortMode == 1) {
 				sortIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/sort-asc-icon.png")));
-			} else if (sortMode == 2){
+			} else if (sortMode == 2) {
 				sortIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/sort-dsc-icon.png")));
 			}
 			sortIcon.setId("sort-icon");
