@@ -115,7 +115,6 @@ public class Main extends Application {
 
 		// Leaderboard button
 		Button leaderboardButton = new Button(" Leaderboard", leaderboardIcon);
-//		leaderboardButton.setId("menu-button");
 		leaderboardButton.getStyleClass().add("small");
 		leaderboardButton.setOnAction(e -> renderLeaderboard(false, GameLeaderboardSortMode.Score));
 
@@ -134,7 +133,6 @@ public class Main extends Application {
 		VBox leaderboardSelect = new VBox(15, chooseLeaderboardPath, leaderboardPathLabel);
 		leaderboardSelect.setAlignment(Pos.CENTER);
 
-//		HBox menuButtons = new HBox(15, playButton, leaderboardButton);
 		VBox menuButtons = new VBox(20, playButton, leaderboardButton, leaderboardSelect);
 		menuButtons.setAlignment(Pos.CENTER);
 
