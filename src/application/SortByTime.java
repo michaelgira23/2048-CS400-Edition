@@ -33,7 +33,7 @@ public class SortByTime implements Comparator<PlayerScore> {
 	 */
 	@Override
 	public int compare(PlayerScore o1, PlayerScore o2) {
-		if (!reversed) {
+		if (reversed) {
 			return o1.getDate().compareTo(o2.getDate());
 		} else {
 			return o2.getDate().compareTo(o1.getDate());
