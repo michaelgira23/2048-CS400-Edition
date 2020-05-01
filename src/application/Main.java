@@ -1,5 +1,6 @@
 package application;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
@@ -47,6 +49,8 @@ public class Main extends Application {
 	// Current game theme that renders the game tiles
 	private GameTheme currentTheme = new BinaryTheme();
 
+	// JaveFX file chooser for leaderboard JSON file
+	FileChooser fileChooser = new FileChooser();
 	// Default path to load leaderboard data JSON file
 	private String leaderboardPath = "leaderboard.json";
 	// Leader board score
@@ -60,23 +64,14 @@ public class Main extends Application {
 		args = this.getParameters().getRaw();
 		System.out.println("Args: " + args);
 
-		leaderboard = GameLeaderboard.load(leaderboardPath);
+		fileChooser.setTitle("Load 2048 Leaderboard");
+		fileChooser.setInitialDirectory(new File("."));
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON", "*.json"));
 
 		this.primaryStage = primaryStage;
 		primaryStage.setTitle(APP_TITLE);
 		renderMenu();
 		primaryStage.show();
-
-		// Load game leader board
-//		loadScoreFromFile();
-
-//		// Du lieu gia
-//		listGameLeaderboard.getTopScores().add(new PlayerScore("Faith Issac", 8));
-//		listGameLeaderboard.getTopScores().add(new PlayerScore("William Cong", 4));
-//		listGameLeaderboard.getTopScores().add(new PlayerScore("Hanyuan Wu", 32));
-//		listGameLeaderboard.getTopScores().add(new PlayerScore("Michael Gira", 64));
-//		listGameLeaderboard.getTopScores().add(new PlayerScore("Quan Nguyen", 16));
-//		saveScoreToFile();
 	}
 
 	/**
@@ -93,29 +88,42 @@ public class Main extends Application {
 	 */
 	private void renderMenu() {
 
-		// Action buttons
+		// Play icon
 		ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/play-icon.png")));
-
 		playIcon.setPreserveRatio(true);
 		playIcon.setFitWidth(22);
 
+		// Play button
 		Button playButton = new Button("", playIcon);
 		playButton.setId("menu-button");
 		playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
 
-		// Leaderboard button
+		// Leaderboard icon
 		ImageView leaderboardIcon = new ImageView(
 				new Image(getClass().getResourceAsStream("assets/leaderboard-icon.png")));
 		leaderboardIcon.setPreserveRatio(true);
 		leaderboardIcon.setFitWidth(10);
 
+		// Leaderboard button
 		Button leaderboardButton = new Button(" Leaderboard", leaderboardIcon);
 //		leaderboardButton.setId("menu-button");
 		leaderboardButton.getStyleClass().add("small");
 		leaderboardButton.setOnAction(e -> renderLeaderboard(false));
 
+		// File selector for leaderboard JSON file
+		Label leaderboardPathLabel = new Label(leaderboardPath);
+		Button chooseLeaderboardPath = new Button("Load Leaderboard File");
+		chooseLeaderboardPath.setOnAction(e -> {
+			File file = fileChooser.showOpenDialog(primaryStage);
+			if (file != null) {
+				leaderboardPath = file.getPath();
+				leaderboardPathLabel.setText(leaderboardPath);
+			}
+		});
+		HBox leaderboardSelect = new HBox(15, leaderboardPathLabel, chooseLeaderboardPath);
+
 //		HBox menuButtons = new HBox(15, playButton, leaderboardButton);
-		VBox menuButtons = new VBox(20, playButton, leaderboardButton);
+		VBox menuButtons = new VBox(20, playButton, leaderboardButton, leaderboardSelect);
 		menuButtons.setAlignment(Pos.CENTER);
 
 		// Stack game title above and action buttons below
@@ -249,6 +257,7 @@ public class Main extends Application {
 	 *                   otherwise, just display existing scores.
 	 */
 	private void renderLeaderboard(boolean inputScore) {
+		leaderboard = GameLeaderboard.load(leaderboardPath);
 
 		// Center layout
 		VBox centerLayout = new VBox();
