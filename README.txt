@@ -12,7 +12,8 @@ Team Members:
 
 
 Notes:
-Bugs: Edge cases for game over
+
+Known Bugs: When the player slides the tiles really fast (by pressing arrow keys or WASD), the game tile animations will sometimes flicker. However, this should not affect the actual state of the game after the animation is over.
 
 Future Work: A way to make this project even more original is to convert the numbers to binary. In addition, depending on the version of 2048 you play, the game can extend even longer than reaching 2048 so it would be interesting to add formalized levels. We also want to add a dropdown with more themes to choose from besides just binary (for example, hex or actal).
 

@@ -26,17 +26,17 @@ public class SortByTime implements Comparator<PlayerScore> {
 	/**
 	 * Compares date o1 date to o2 date
 	 * 
-	 * @param o1 first player to be compared
-	 * @param o2 second player to be compared
+	 * @param score1 first player score to compare
+	 * @param score2 second player score to compare
 	 * @return negative if o1 precedes, 0 if they are equal, positive if o1 date
 	 *         comes after o2 date
 	 */
 	@Override
-	public int compare(PlayerScore o1, PlayerScore o2) {
+	public int compare(PlayerScore score1, PlayerScore score2) {
 		if (reversed) {
-			return o1.getDate().compareTo(o2.getDate());
+			return score1.getDate().compareTo(score2.getDate());
 		} else {
-			return o2.getDate().compareTo(o1.getDate());
+			return score2.getDate().compareTo(score1.getDate());
 		}
 	}
 }
