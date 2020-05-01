@@ -53,7 +53,14 @@
 }
 
 #submitted {
-	-fx-text-fill: #4BB543;
+	-fx-text-fill: #0A8916;
+	-fx-font-family: 'Inconsolata';
+	-fx-font-size: 14;
+	-fx-padding: 8 0 54 0;
+}
+
+#error {
+	-fx-text-fill: #C6513D;
 	-fx-font-family: 'Inconsolata';
 	-fx-font-size: 14;
 	-fx-padding: 8 0 54 0;

@@ -330,8 +330,11 @@ public class Main extends Application {
 			form.setId("form");
 			centerLayout.getChildren().add(form);
 
-			Label submitted = new Label("Score has been submitted!");
-			submitted.setId("submitted");
+			Label submittedLabel = new Label("Score has been submitted!");
+			submittedLabel.setId("submitted");
+
+			Label errorLabel = new Label("Error saving score!");
+			errorLabel.setId("error");
 
 			// Form submit behavior
 			EventHandler<ActionEvent> submitLeaderboard = e -> {
@@ -344,13 +347,15 @@ public class Main extends Application {
 					// Save top score to file
 					try {
 						leaderboard.export(leaderboardPath);
-					} catch (IOException e1) {
+						centerLayout.getChildren().remove(form);
+						centerLayout.getChildren().add(2, submittedLabel);
+					} catch (IOException error) {
 						System.out.println("Error saving leaderboard to file!");
-						e1.printStackTrace();
+						error.printStackTrace();
+						centerLayout.getChildren().remove(form);
+						centerLayout.getChildren().add(2, errorLabel);
 					}
 				}
-				centerLayout.getChildren().remove(form);
-				centerLayout.getChildren().add(2, submitted);
 
 			};
 
