@@ -108,7 +108,7 @@ public class Main extends Application {
 		Button leaderboardButton = new Button(" Leaderboard", leaderboardIcon);
 //		leaderboardButton.setId("menu-button");
 		leaderboardButton.getStyleClass().add("small");
-		leaderboardButton.setOnAction(e -> renderLeaderboard(false, 1));
+		leaderboardButton.setOnAction(e -> renderLeaderboard(false, GameLeaderboardSortMode.Score));
 
 		// File selector for leaderboard JSON file
 		Label leaderboardPathLabel = new Label(leaderboardPath);
@@ -227,7 +227,7 @@ public class Main extends Application {
 	}
 
 	public void gameOver() {
-		renderLeaderboard(true, 1);
+		renderLeaderboard(true, GameLeaderboardSortMode.Score);
 	}
 
 	/**
@@ -275,7 +275,7 @@ public class Main extends Application {
 	 * @param inputScore Whether to display form for inputting user score;
 	 *                   otherwise, just display existing scores.
 	 */
-	private void renderLeaderboard(boolean inputScore, int sortMode) {
+	private void renderLeaderboard(boolean inputScore, GameLeaderboardSortMode sortMode) {
 		leaderboard = GameLeaderboard.load(leaderboardPath);
 
 		// Center layout
@@ -392,10 +392,25 @@ public class Main extends Application {
 			actionButtons = new HBox(15, menuButton, playButton);
 
 		} else {
+			Button sortModeButton;
+			if (sortMode == GameLeaderboardSortMode.Score || sortMode == GameLeaderboardSortMode.ScoreReversed) {
+				sortModeButton = new Button("by date");
+				sortModeButton.setOnAction(e -> {
+					renderLeaderboard(false, GameLeaderboardSortMode.Date);
+				});
+			} else {
+				sortModeButton = new Button("by score");
+				sortModeButton.setOnAction(e -> {
+					renderLeaderboard(false, GameLeaderboardSortMode.Score);
+				});
+			}
+			sortModeButton.setId("sort-mode");
+
 			ImageView sortIcon = null;
-			if (sortMode == 1) {
+			if (sortMode == GameLeaderboardSortMode.Score || sortMode == GameLeaderboardSortMode.Date) {
 				sortIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/sort-asc-icon.png")));
-			} else if (sortMode == 2) {
+			} else if (sortMode == GameLeaderboardSortMode.ScoreReversed
+					|| sortMode == GameLeaderboardSortMode.DateReversed) {
 				sortIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/sort-dsc-icon.png")));
 			}
 			sortIcon.setId("sort-icon");
@@ -406,10 +421,19 @@ public class Main extends Application {
 			sortButton.setId("sort");
 
 			sortButton.setOnAction(e -> {
-				if (sortMode == 1) {
-					renderLeaderboard(false, 2);
-				} else if (sortMode == 2) {
-					renderLeaderboard(false, 1);
+				switch (sortMode) {
+					case Score:
+						renderLeaderboard(false, GameLeaderboardSortMode.ScoreReversed);
+						break;
+					case ScoreReversed:
+						renderLeaderboard(false, GameLeaderboardSortMode.Score);
+						break;
+					case Date:
+						renderLeaderboard(false, GameLeaderboardSortMode.DateReversed);
+						break;
+					case DateReversed:
+						renderLeaderboard(false, GameLeaderboardSortMode.Date);
+						break;
 				}
 			});
 
@@ -424,7 +448,7 @@ public class Main extends Application {
 
 			Region spacer = new Region();
 			HBox.setHgrow(spacer, Priority.ALWAYS);
-			actionButtons = new HBox(15, menuButton, spacer, sortButton);
+			actionButtons = new HBox(15, menuButton, spacer, sortModeButton, sortButton);
 		}
 		actionButtons.setAlignment(Pos.CENTER);
 
@@ -458,13 +482,29 @@ public class Main extends Application {
 	/*
 	 * @param sorting mode
 	 */
-	private void listScores(VBox list, int mode, int numToList) {
+	private void listScores(VBox list, GameLeaderboardSortMode sortMode, int numToList) {
 
-		Object[] sortedScores = leaderboard.getTopScores(mode);
+		PlayerScore[] sortedScores;
+		switch (sortMode) {
+			case Score:
+				sortedScores = leaderboard.getTopScores(false);
+				break;
+			case ScoreReversed:
+				sortedScores = leaderboard.getTopScores(true);
+				break;
+			case Date:
+				sortedScores = leaderboard.sortedTopScoresByTime(false);
+				break;
+			case DateReversed:
+				sortedScores = leaderboard.sortedTopScoresByTime(true);
+				break;
+			default:
+				sortedScores = new PlayerScore[] {};
+				break;
+		}
 
 		for (int i = 0; i < Math.min(numToList, sortedScores.length); i++) {
-			Object object = sortedScores[i];
-			PlayerScore currentScore = (PlayerScore) object;
+			PlayerScore currentScore = sortedScores[i];
 			Label name = new Label(currentScore.getName());
 			name.setId("leaderboard-name");
 

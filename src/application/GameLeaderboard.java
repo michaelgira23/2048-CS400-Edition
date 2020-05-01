@@ -53,48 +53,39 @@ public class GameLeaderboard implements Serializable {
 	 *
 	 * @return tSort array of topScores sorted by timestamp using comparator
 	 */
-	public PlayerScore[] sortedTopScoresByTime() {
-		PlayerScore[] tSort = new PlayerScore[topScores.size()];
-		topScores.toArray(tSort);
-		Arrays.sort(tSort);
-		Arrays.sort(tSort, new sortByTime());
-		return tSort;
-	}
-
-	/**
-	 * Getter for topScores
-	 *
-	 * @return topScores priority queue of top scorers
-	 */
-	public PlayerScore[] getTopScores() {
+	public PlayerScore[] sortedTopScoresByTime(boolean reversed) {
 		PlayerScore[] pQArray = new PlayerScore[topScores.size()];
 		topScores.toArray(pQArray);
-		Arrays.sort(pQArray);
+		Arrays.sort(pQArray, new SortByTime(reversed));
 		return pQArray;
 	}
 
 	/**
-	 * Add score to the list
+	 * Get an array of the top scores from the leaderboard
 	 *
-	 * @param currentScore score to be added
+	 * @param reversed Whether the scores should be reversed (least to greatest)
+	 *                 instead of greatest to least.
 	 */
-	public Object[] getTopScores(int mode) {
-		Object[] pQArray = topScores.toArray();
-		if (mode == 1) {
+	public PlayerScore[] getTopScores(boolean reversed) {
+		PlayerScore[] pQArray = new PlayerScore[topScores.size()];
+		topScores.toArray(pQArray);
+		if (!reversed) {
 			Arrays.sort(pQArray);
-		} else if (mode == 2) {
-			Arrays.sort(pQArray, Collections.reverseOrder());
 		} else {
-			throw new UnsupportedOperationException();
+			Arrays.sort(pQArray, Collections.reverseOrder());
 		}
 		return pQArray;
-}
+	}
 
+	/**
+	 * Add a player's score to the leaderboard. Note: this does not save the new
+	 * leaderboard to file.
+	 * 
+	 * @param currentScore Name and score of the player
+	 */
 	public void add(PlayerScore currentScore) {
 		topScores.add(currentScore);
 	}
-
-
 
 	/**
 	 * Save the current leaderboard into a specified JSON path.
@@ -107,7 +98,7 @@ public class GameLeaderboard implements Serializable {
 
 		JSONArray scores = new JSONArray();
 
-		for (PlayerScore score : getTopScores()) {
+		for (PlayerScore score : getTopScores(false)) {
 			JSONObject scoreEntry = new JSONObject();
 			scoreEntry.put("name", score.getName());
 			scoreEntry.put("score", score.getScore());
@@ -161,7 +152,7 @@ public class GameLeaderboard implements Serializable {
 				}
 			}
 
-			System.out.println("Successfully loaded " + leaderboard.getTopScores().length + " score(s).");
+			System.out.println("Successfully loaded " + leaderboard.getTopScores(false).length + " score(s).");
 
 		} catch (FileNotFoundException e) {
 			// If file not found

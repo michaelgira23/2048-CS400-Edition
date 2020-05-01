@@ -15,6 +15,13 @@
 	-fx-padding: 0 0 16 0;
 }
 
+#sort-mode {
+	-fx-background-color: none;
+	
+	-fx-text-fill: #363062;
+	-fx-font-weight: normal;
+}
+
 #sort {
 	-fx-padding: 12 4 12 0;
 	-fx-background-color: none;
