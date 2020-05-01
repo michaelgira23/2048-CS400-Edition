@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.PriorityQueue;
@@ -18,7 +19,7 @@ import org.json.simple.parser.ParseException;
 
 /**
  * A list of the top player scores
- * 
+ *
  * @author Quan Nguyen
  *
  */
@@ -30,7 +31,7 @@ public class GameLeaderboard implements Serializable {
 
 	/**
 	 * Check if current score is in top score
-	 * 
+	 *
 	 * @param currentScore
 	 * @return whether or not it is
 	 */
@@ -49,7 +50,7 @@ public class GameLeaderboard implements Serializable {
 
 	/**
 	 * Sorts topScores by timestamp
-	 * 
+	 *
 	 * @return tSort array of topScores sorted by timestamp using comparator
 	 */
 	public PlayerScore[] sortedTopScoresByTime() {
@@ -62,7 +63,7 @@ public class GameLeaderboard implements Serializable {
 
 	/**
 	 * Getter for topScores
-	 * 
+	 *
 	 * @return topScores priority queue of top scorers
 	 */
 	public PlayerScore[] getTopScores() {
@@ -74,16 +75,30 @@ public class GameLeaderboard implements Serializable {
 
 	/**
 	 * Add score to the list
-	 * 
+	 *
 	 * @param currentScore score to be added
 	 */
+	public Object[] getTopScores(int mode) {
+		Object[] pQArray = topScores.toArray();
+		if (mode == 1) {
+			Arrays.sort(pQArray);
+		} else if (mode == 2) {
+			Arrays.sort(pQArray, Collections.reverseOrder());
+		} else {
+			throw new UnsupportedOperationException();
+		}
+		return pQArray;
+}
+
 	public void add(PlayerScore currentScore) {
 		topScores.add(currentScore);
 	}
 
+
+
 	/**
 	 * Save the current leaderboard into a specified JSON path.
-	 * 
+	 *
 	 * @param jsonPath
 	 * @throws IOException
 	 */
@@ -111,7 +126,7 @@ public class GameLeaderboard implements Serializable {
 	/**
 	 * Loads a game leaderboard from a given path. If path doesn't exist, returns
 	 * empty leaderboard.
-	 * 
+	 *
 	 * @param jsonPath Path to JSON file containing leaderboard data
 	 * @return GameLeaderboard instance with loaded scores, if they exist
 	 */
