@@ -19,10 +19,13 @@ import javafx.util.Duration;
  */
 public class BinaryTheme implements GameTheme {
 
+	// Grid layout to render all the tiles
 	GridPane grid = new GridPane();
 
 	/**
-	 * Renders the game
+	 * Renders the game with binary numbers
+	 * 
+	 * @param game Game state to render
 	 */
 	public Node render(Game game) {
 		grid.getStylesheets().addAll("application/binary-theme.css");
@@ -32,6 +35,7 @@ public class BinaryTheme implements GameTheme {
 		grid.setHgap(8);
 		grid.setVgap(8);
 
+		// Initially draw tiles
 		updateBoard(game.getBoard());
 
 		// Reflect any new changes when the game state changes
@@ -44,10 +48,10 @@ public class BinaryTheme implements GameTheme {
 				// Get the node we're supposed to move
 				Node tile = getTileFromGrid(grid, slide.fromRow, slide.fromColumn);
 
-				// We should always be moving a tile that
+				// If tile is null, the player may be sliding the tiles very fast.
+				// This means the previous move's animation hasn't stopped playing, but it will
+				// update the real game state later anyways
 				if (tile == null) {
-					System.out.println("Trying to move nonexistent tile at position (" + slide.fromRow + ", "
-							+ slide.fromColumn + "). This should NEVER happen!!!");
 					continue;
 				}
 
@@ -58,18 +62,24 @@ public class BinaryTheme implements GameTheme {
 
 				// Get the empty tile at the position we're trying to move to, so that we can
 				// get the new coordinates
-				// TODO: This May return null! please handle it if possible
 				Node targetTile = getBackgroundTileFromGrid(grid, slide.toRow, slide.toColumn);
+
+				if (targetTile == null) {
+					continue;
+				}
+
 				Bounds targetBounds = targetTile.getBoundsInParent();
 
 				TranslateTransition translate = new TranslateTransition(Duration.millis(200), tile);
 				translate.setInterpolator(Interpolator.EASE_OUT);
 				translate.setByX(targetBounds.getCenterX() - tileBounds.getCenterX());
-				translate.setByY(targetBounds.getCenterY() - tileBounds.getCenterY());
+				translate.setByY(targetBounds.getCenterY() - tileBounds.getCenterY() + 5);
 
 				translations.getChildren().add(translate);
 			}
 
+			// Once animation finishes, replace the animated tiles with the new ones at
+			// their updated position
 			translations.setOnFinished(e -> {
 				updateBoard(game.getBoard());
 			});

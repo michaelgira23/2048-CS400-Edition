@@ -8,12 +8,18 @@ package application;
  *
  */
 public class SlideEvent {
+
+	// Tile being slid
 	public GameSquare tile;
+
+	// Whether this slide will combine with another tile, and if so, how
 	public SlideEventAction action;
 
+	// Initial position in animation
 	public int fromRow;
 	public int fromColumn;
 
+	// Final position in animation
 	public int toRow;
 	public int toColumn;
 

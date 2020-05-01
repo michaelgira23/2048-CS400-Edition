@@ -1,8 +1,8 @@
 package application;
 
-import java.util.LinkedHashMap;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -22,29 +22,48 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
- * Main game file
- * 
- * @author Michael Gira
+ * Main game and GUI control
+ *
+ * @author Michael Gira, Quan Nguyen, Hanyuan Wu, Will Cong, Faith Isaac
  *
  */
 public class Main extends Application {
 
-
-	private static final boolean DEBUG = true;
-
+	// Height of GUI window
 	private static final int WINDOW_WIDTH = 600;
 	private static final int WINDOW_HEIGHT = 700;
+
+	// Title to display on GUI
 	private static final String APP_TITLE = "2048: CS400 Edition";
 
+	// Random number generator seed
 	private int seed = 0;
+
+	// Java program arguments
 	private List<String> args;
+
+	// Primary JavaFX stage
 	private Stage primaryStage;
 
+	// Instance internal logic of the game
 	private Game game;
+
+	// Current game theme that renders the game tiles
 	private GameTheme currentTheme = new BinaryTheme();
+
+	// JaveFX file chooser for leaderboard JSON file
+	FileChooser fileChooser = new FileChooser();
+
+	// Default path to load leaderboard data JSON file
+	private String leaderboardPath = "leaderboard.json";
+	private boolean isDefaultLeaderboardPath = true;
+
+	// Leader board score
+	private GameLeaderboard leaderboard;
 
 	/**
 	 * Sets up initial game screen
@@ -54,6 +73,10 @@ public class Main extends Application {
 		args = this.getParameters().getRaw();
 		System.out.println("Args: " + args);
 
+		fileChooser.setTitle("Load 2048 Leaderboard");
+		fileChooser.setInitialDirectory(new File("."));
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON", "*.json"));
+
 		this.primaryStage = primaryStage;
 		primaryStage.setTitle(APP_TITLE);
 		renderMenu();
@@ -62,7 +85,7 @@ public class Main extends Application {
 
 	/**
 	 * Launches JavaFX
-	 * 
+	 *
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -74,30 +97,43 @@ public class Main extends Application {
 	 */
 	private void renderMenu() {
 
-		// Action buttons
-		ImageView playIcon = new ImageView(
-				new Image(getClass().getResourceAsStream("assets/play-icon.png")));
-
+		// Play icon
+		ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/play-icon.png")));
 		playIcon.setPreserveRatio(true);
 		playIcon.setFitWidth(22);
 
+		// Play button
 		Button playButton = new Button("", playIcon);
 		playButton.setId("menu-button");
 		playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
 
-		// Leaderboard button
+		// Leaderboard icon
 		ImageView leaderboardIcon = new ImageView(
 				new Image(getClass().getResourceAsStream("assets/leaderboard-icon.png")));
 		leaderboardIcon.setPreserveRatio(true);
 		leaderboardIcon.setFitWidth(10);
 
-		Button leaderboardButton = new Button("Leaderboard", leaderboardIcon);
-//		leaderboardButton.setId("menu-button");
+		// Leaderboard button
+		Button leaderboardButton = new Button(" Leaderboard", leaderboardIcon);
 		leaderboardButton.getStyleClass().add("small");
-		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
+		leaderboardButton.setOnAction(e -> renderLeaderboard(false, GameLeaderboardSortMode.Score));
 
-//		HBox menuButtons = new HBox(15, playButton, leaderboardButton);
-		VBox menuButtons = new VBox(15, playButton, leaderboardButton);
+		// File selector for leaderboard JSON file
+		Label leaderboardPathLabel = new Label(
+				isDefaultLeaderboardPath ? "Default: " + leaderboardPath : leaderboardPath);
+		Button chooseLeaderboardPath = new Button("Load Leaderboard File");
+		chooseLeaderboardPath.setOnAction(e -> {
+			File file = fileChooser.showOpenDialog(primaryStage);
+			if (file != null) {
+				leaderboardPath = file.getPath();
+				leaderboardPathLabel.setText(leaderboardPath);
+				isDefaultLeaderboardPath = false;
+			}
+		});
+		VBox leaderboardSelect = new VBox(15, chooseLeaderboardPath, leaderboardPathLabel);
+		leaderboardSelect.setAlignment(Pos.CENTER);
+
+		VBox menuButtons = new VBox(20, playButton, leaderboardButton, leaderboardSelect);
 		menuButtons.setAlignment(Pos.CENTER);
 
 		// Stack game title above and action buttons below
@@ -118,26 +154,38 @@ public class Main extends Application {
 
 	/**
 	 * On the primary stage, display the game state rendered with a given theme
-	 * 
+	 *
 	 * @param theme Current theme with which to render the game
 	 */
 	private void renderGameWithTheme(GameTheme theme) {
-		game = new Game(seed);
+		game = new Game(seed, this);
 		BorderPane gameLayout = new BorderPane();
 
 		// Game title + action buttons at the top
 
-		// TODO: LeaderBoard should not be directly accessible from the game body
-		//  , unless a "return" button is set, and a parameter showing whether it
-		//  should display "Game Over"
-		Button leaderboardButton = new Button("Leaderboard");
-		leaderboardButton.setOnAction(e -> renderLeaderboard(true));
+		ImageView backIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/back-icon.png")));
+		backIcon.setId("back-icon");
+		backIcon.setPreserveRatio(true);
+		backIcon.setFitWidth(12);
 
-		// TODO: implement a restart button
+		// Menu button
 		Button menuButton = new Button("Menu");
+		menuButton.setId("menu-small");
 		menuButton.setOnAction(e -> renderMenu());
 
-		HBox actionButtons = new HBox(15, leaderboardButton, menuButton);
+		// Restart button
+		ImageView restartIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/restart-icon.png")));
+		restartIcon.setId("restart-icon");
+		restartIcon.setPreserveRatio(true);
+		restartIcon.setFitWidth(24);
+		Button restartButton = new Button("", restartIcon);
+		restartButton.setId("restart");
+		restartButton.setOnAction(e -> renderGameWithTheme(theme));
+
+		Region spacer = new Region();
+		HBox.setHgrow(spacer, Priority.ALWAYS);
+
+		HBox actionButtons = new HBox(330, menuButton, restartButton);
 		actionButtons.setAlignment(Pos.CENTER);
 
 		VBox gameHeader = new VBox();
@@ -178,11 +226,19 @@ public class Main extends Application {
 		gameScene.addEventFilter(KeyEvent.KEY_PRESSED, this::handleKeyPress);
 
 		primaryStage.setScene(gameScene);
+
+	}
+
+	/**
+	 * Handler for when the game ends
+	 */
+	public void gameOver() {
+		renderLeaderboard(true, GameLeaderboardSortMode.Score);
 	}
 
 	/**
 	 * Handle a key press for the game
-	 * 
+	 *
 	 * @param event KeyEvent associated with the key press
 	 */
 	private void handleKeyPress(KeyEvent event) {
@@ -211,10 +267,8 @@ public class Main extends Application {
 				break;
 		}
 
-		// DEBUG
-		if(DEBUG) System.out.println("slide direction: " + direction);
-
-		if(direction != null) game.slide(direction);
+		if (direction != null)
+			game.slide(direction);
 	}
 
 	/**
@@ -223,15 +277,14 @@ public class Main extends Application {
 	 * @param inputScore Whether to display form for inputting user score;
 	 *                   otherwise, just display existing scores.
 	 */
-	private void renderLeaderboard(boolean inputScore) {
+	private void renderLeaderboard(boolean inputScore, GameLeaderboardSortMode sortMode) {
+		leaderboard = GameLeaderboard.load(leaderboardPath);
 
 		// Center layout
 		VBox centerLayout = new VBox();
 		centerLayout.setId("center-layout");
 		centerLayout.setAlignment(Pos.TOP_CENTER);
 
-		// DONE: implement a return button, and let a parameter to check if
-		//  it is gameOver or just that leaderBoard button is clicked
 		Label title;
 		if (inputScore) {
 			title = new Label("Game Over");
@@ -248,9 +301,9 @@ public class Main extends Application {
 
 			Label scoreValue;
 			if (game == null) {
-				scoreValue = new Label(Integer.toBinaryString(0));
+				scoreValue = new Label(Long.toBinaryString(0));
 			} else {
-				scoreValue = new Label(Integer.toBinaryString(Math.max(game.getScore(), 0)));
+				scoreValue = new Label(Long.toBinaryString(Math.max(game.getScore(), 0)));
 			}
 			scoreValue.setId("score-value");
 
@@ -273,39 +326,123 @@ public class Main extends Application {
 			submit.setId("form-submit");
 			submit.getStyleClass().add("small");
 
+			HBox form = new HBox(7, nameInput, submit);
+			form.setId("form");
+			centerLayout.getChildren().add(form);
+
+			Label submittedLabel = new Label("Score has been submitted!");
+			submittedLabel.setId("submitted");
+
+			Label errorLabel = new Label("Error saving score!");
+			errorLabel.setId("error");
+
 			// Form submit behavior
 			EventHandler<ActionEvent> submitLeaderboard = e -> {
-				System.out.println("Register " + nameInput.getText() + " with a score of " + game.getScore());
+				if (game != null) {
+					System.out.println("Register " + nameInput.getText() + " with a score of " + game.getScore());
+					// Get current score
+					PlayerScore currentScore = new PlayerScore(nameInput.getText(), game.getScore());
+					// Add current score to top score list
+					leaderboard.add(currentScore);
+					// Save top score to file
+					try {
+						leaderboard.export(leaderboardPath);
+						centerLayout.getChildren().remove(form);
+						centerLayout.getChildren().add(2, submittedLabel);
+					} catch (IOException error) {
+						System.out.println("Error saving leaderboard to file!");
+						error.printStackTrace();
+						centerLayout.getChildren().remove(form);
+						centerLayout.getChildren().add(2, errorLabel);
+					}
+				}
+
 			};
 
 			nameInput.setOnAction(submitLeaderboard);
 			submit.setOnAction(submitLeaderboard);
 
-			HBox form = new HBox(5, nameInput, submit);
-			form.setId("form");
-			centerLayout.getChildren().add(form);
 		}
-
-		// "Play Again" button
-
-		/** @TODO Image is purple so we need to make play icon white */
-//		ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/play-icon.png")));
-//		playIcon.setPreserveRatio(true);
-//		playIcon.setFitWidth(12);
-
-		Button playButton;
-		if (inputScore) {
-			playButton = new Button("Play Again");
-		} else {
-			playButton = new Button("Play");
-		}
-		playButton.setId("play-again");
-		playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
 
 		Button menuButton = new Button("Menu");
+		menuButton.setId("menu");
 		menuButton.setOnAction(e -> renderMenu());
 
-		HBox actionButtons = new HBox(15, playButton, menuButton);
+		// Do not display play button if its in leaderboard-only mode
+		HBox actionButtons;
+		if (inputScore) {
+
+			ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/play-icon.png")));
+			playIcon.setId("play-icon");
+			playIcon.setPreserveRatio(true);
+			playIcon.setFitWidth(12);
+			Button playButton = new Button(" Play Again", playIcon);
+			playButton.setId("play-again");
+			playButton.setOnAction(e -> renderGameWithTheme(currentTheme));
+
+			actionButtons = new HBox(15, menuButton, playButton);
+
+		} else {
+			// Button for changing whether to sort by date or score
+			Button sortModeButton;
+			if (sortMode == GameLeaderboardSortMode.Score || sortMode == GameLeaderboardSortMode.ScoreReversed) {
+				sortModeButton = new Button("by date");
+				sortModeButton.setOnAction(e -> {
+					renderLeaderboard(false, GameLeaderboardSortMode.Date);
+				});
+			} else {
+				sortModeButton = new Button("by score");
+				sortModeButton.setOnAction(e -> {
+					renderLeaderboard(false, GameLeaderboardSortMode.Score);
+				});
+			}
+			sortModeButton.setId("sort-mode");
+
+			// Icon for manipulating sorting direction
+			ImageView sortIcon = null;
+			if (sortMode == GameLeaderboardSortMode.Score || sortMode == GameLeaderboardSortMode.Date) {
+				sortIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/sort-asc-icon.png")));
+			} else if (sortMode == GameLeaderboardSortMode.ScoreReversed
+					|| sortMode == GameLeaderboardSortMode.DateReversed) {
+				sortIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/sort-dsc-icon.png")));
+			}
+			sortIcon.setId("sort-icon");
+			sortIcon.setPreserveRatio(true);
+			sortIcon.setFitWidth(14);
+
+			// Reverse the direction for the respective sorting modes
+			Button sortButton = new Button("", sortIcon);
+			sortButton.setId("sort");
+			sortButton.setOnAction(e -> {
+				switch (sortMode) {
+					case Score:
+						renderLeaderboard(false, GameLeaderboardSortMode.ScoreReversed);
+						break;
+					case ScoreReversed:
+						renderLeaderboard(false, GameLeaderboardSortMode.Score);
+						break;
+					case Date:
+						renderLeaderboard(false, GameLeaderboardSortMode.DateReversed);
+						break;
+					case DateReversed:
+						renderLeaderboard(false, GameLeaderboardSortMode.Date);
+						break;
+				}
+			});
+
+			ImageView backIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/back-icon.png")));
+			backIcon.setId("back-icon");
+			backIcon.setPreserveRatio(true);
+			backIcon.setFitWidth(6);
+
+			menuButton = new Button(" Menu", backIcon);
+			menuButton.setId("menu-small");
+			menuButton.setOnAction(e -> renderMenu());
+
+			Region spacer = new Region();
+			HBox.setHgrow(spacer, Priority.ALWAYS);
+			actionButtons = new HBox(15, menuButton, spacer, sortModeButton, sortButton);
+		}
 		actionButtons.setAlignment(Pos.CENTER);
 
 		centerLayout.getChildren().add(actionButtons);
@@ -317,30 +454,12 @@ public class Main extends Application {
 			centerLayout.getChildren().add(topScoresHeader);
 		}
 
-		// Pretend high scores
-		Map<String, Integer> topScores = new LinkedHashMap<String, Integer>();
-		topScores.put("William Cong", 1194);
-		topScores.put("Faith Isaac", 1000);
-		topScores.put("Quan Nguyen", 870);
-		topScores.put("Hanyuan Wu", 512);
-		topScores.put("Michael Gira", 64);
-
 		VBox topScoresList = new VBox();
-		for (Map.Entry<String, Integer> entry : topScores.entrySet()) {
-
-			Label name = new Label(entry.getKey());
-			name.setId("leaderboard-name");
-
-			Label score = new Label(Integer.toBinaryString(entry.getValue()));
-			score.setId("leaderboard-score");
-
-			// Filler element for spacing out other elements in an HBox
-			Region spacer = new Region();
-			HBox.setHgrow(spacer, Priority.ALWAYS);
-
-			HBox row = new HBox(name, spacer, score);
-			row.setId("leaderboard-player");
-			topScoresList.getChildren().add(row);
+		// Display more scores if there's no form taking up space
+		if (inputScore) {
+			listScores(topScoresList, sortMode, 5);
+		} else {
+			listScores(topScoresList, sortMode, 15);
 		}
 		centerLayout.getChildren().add(topScoresList);
 
@@ -354,8 +473,52 @@ public class Main extends Application {
 	}
 
 	/**
-	 * Get a JavaFX node that has the game's title and subtitle
+	 * List a certain amount of scores in a certain order
 	 * 
+	 * @param sortMode Mode for which to sort the scores
+	 */
+	private void listScores(VBox list, GameLeaderboardSortMode sortMode, int numToList) {
+
+		PlayerScore[] sortedScores;
+		switch (sortMode) {
+			case Score:
+				sortedScores = leaderboard.getTopScores(false);
+				break;
+			case ScoreReversed:
+				sortedScores = leaderboard.getTopScores(true);
+				break;
+			case Date:
+				sortedScores = leaderboard.sortedTopScoresByTime(false);
+				break;
+			case DateReversed:
+				sortedScores = leaderboard.sortedTopScoresByTime(true);
+				break;
+			default:
+				sortedScores = new PlayerScore[] {};
+				break;
+		}
+
+		for (int i = 0; i < Math.min(numToList, sortedScores.length); i++) {
+			PlayerScore currentScore = sortedScores[i];
+			Label name = new Label(currentScore.getName());
+			name.setId("leaderboard-name");
+
+			Label score = new Label(Long.toBinaryString(currentScore.getScore()));
+			score.setId("leaderboard-score");
+
+			// Filler element for spacing out other elements in an HBox
+			Region spacer = new Region();
+			HBox.setHgrow(spacer, Priority.ALWAYS);
+
+			HBox row = new HBox(name, spacer, score);
+			row.setId("leaderboard-player");
+			list.getChildren().add(row);
+		}
+	}
+
+	/**
+	 * Get a JavaFX node that has the game's title and subtitle
+	 *
 	 * @param big Whether to have the large variant (with bigger font size and line
 	 *            break in middle)
 	 * @return The game header to display throughout the application at the top
@@ -383,4 +546,5 @@ public class Main extends Application {
 
 		return gameHeader;
 	}
+
 }
