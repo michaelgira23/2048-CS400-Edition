@@ -12,10 +12,12 @@ Team Members:
 
 
 Notes:
-Bugs - Edge cases for game over
+Bugs: Edge cases for game over
 
-Future Work - A way to make this project even more original is to convert the numbers to binary. In addition, depending on the version of 2048 you play, the game can extend even longer than reaching 2048 so it would be interesting to add formalized levels.
+Future Work: A way to make this project even more original is to convert the numbers to binary. In addition, depending on the version of 2048 you play, the game can extend even longer than reaching 2048 so it would be interesting to add formalized levels. We also want to add a dropdown with more themes to choose from besides just binary (for example, hex or actal).
 
-Concept - This game is a recreation of 2048 using JavaFX, seeing as there is not a fun enough, yet intellectually stimulating, game made with JavaFX.. On a 4x4 playing board, the player can slide all the squares up, down, right, and left. If two squares with the same number slide into each other, they will combine into a single square with an incremented number. The player's goal is to combine the numbered squares until they reach 2048. They lose once the playing board is filled up and they can no longer combine any more squares.
+Concept: This game is a recreation of 2048 using JavaFX, seeing as there is not a fun enough, yet intellectually stimulating, game made with JavaFX. On a 4x4 playing board, the player can slide all the squares up, down, right, and left. If two squares with the same number slide into each other, they will combine into a single square with an incremented number. The player's goal is to combine the numbered squares until they reach 2048. They lose once the playing board is filled up and they can no longer combine any more squares.
+
+Notes to the grader: We have placed a leaderboard.json with fabricated high scores because we are not nearly good at playing the game as we are programming it.
 
 This project was created by A-Team 68 for CS400, Spring 2020 at the University of Wisconsin-Madison
