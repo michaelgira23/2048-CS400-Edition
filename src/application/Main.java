@@ -33,8 +33,6 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-	private static final boolean DEBUG = true;
-
 	// Height of GUI window
 	private static final int WINDOW_WIDTH = 600;
 	private static final int WINDOW_HEIGHT = 700;
@@ -270,10 +268,6 @@ public class Main extends Application {
 				direction = null;
 				break;
 		}
-
-		// DEBUG
-		if (DEBUG)
-			System.out.println("slide direction: " + direction);
 
 		if (direction != null)
 			game.slide(direction);

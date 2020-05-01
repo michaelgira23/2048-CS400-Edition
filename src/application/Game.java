@@ -12,7 +12,6 @@ import java.util.Random;
  */
 
 public class Game {
-	static final boolean DEBUG = true;
 
 	// Dimensions of the playing board
 	static final int HEIGHT = 4;
@@ -323,16 +322,6 @@ public class Game {
 			}
 		}
 		return slides;
-	}
-
-	/**
-	 * Place a square on a particular side of the playing board This may be public,
-	 * if needed, just modify the signature In fact squareGen will never return
-	 * false in normal cases. This is prepared for possible GUI bugs
-	 */
-	private void placeSquare() {
-		if (!squareGen())
-			isGameOver = true;
 	}
 
 	/**
