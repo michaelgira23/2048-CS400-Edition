@@ -26,24 +26,32 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
- * Main game file
+ * Main game and GUI control
  *
- * @author Michael Gira and Quan Nguyen
+ * @author Michael Gira, Quan Nguyen, Hanyuan Wu, Will Cong, Faith Isaac
  *
  */
 public class Main extends Application {
 
 	private static final boolean DEBUG = true;
 
+	// Height of GUI window
 	private static final int WINDOW_WIDTH = 600;
 	private static final int WINDOW_HEIGHT = 700;
+
+	// Title to display on GUI
 	private static final String APP_TITLE = "2048: CS400 Edition";
 
+	// Random number generator seed
 	private int seed = 0;
+
+	// Java program arguments
 	private List<String> args;
+
+	// Primary JavaFX stage
 	private Stage primaryStage;
 
-	// Internal logic of the game
+	// Instance internal logic of the game
 	private Game game;
 
 	// Current game theme that renders the game tiles
@@ -51,9 +59,11 @@ public class Main extends Application {
 
 	// JaveFX file chooser for leaderboard JSON file
 	FileChooser fileChooser = new FileChooser();
+
 	// Default path to load leaderboard data JSON file
 	private String leaderboardPath = "leaderboard.json";
 	private boolean isDefaultLeaderboardPath = true;
+
 	// Leader board score
 	private GameLeaderboard leaderboard;
 
@@ -157,23 +167,17 @@ public class Main extends Application {
 
 		// Game title + action buttons at the top
 
-		// TODO: LeaderBoard should not be directly accessible from the game body
-		// , unless a "return" button is set, and a parameter showing whether it
-		// should display "Game Over"
-
-		// MICHAELLLLLLLLLLLLLLLLLLLLLLLLLLLL LOOK HERE THIS IS YOUR CODE
-		// Button leaderboardButton = new Button("Leaderboard");
-		// leaderboardButton.setOnAction(e -> renderLeaderboard(true));
-
 		ImageView backIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/back-icon.png")));
 		backIcon.setId("back-icon");
 		backIcon.setPreserveRatio(true);
 		backIcon.setFitWidth(12);
 
+		// Menu button
 		Button menuButton = new Button("Menu");
 		menuButton.setId("menu-small");
 		menuButton.setOnAction(e -> renderMenu());
 
+		// Restart button
 		ImageView restartIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/restart-icon.png")));
 		restartIcon.setId("restart-icon");
 		restartIcon.setPreserveRatio(true);
@@ -229,6 +233,9 @@ public class Main extends Application {
 
 	}
 
+	/**
+	 * Handler for when the game ends
+	 */
 	public void gameOver() {
 		renderLeaderboard(true, GameLeaderboardSortMode.Score);
 	}
@@ -286,8 +293,6 @@ public class Main extends Application {
 		centerLayout.setId("center-layout");
 		centerLayout.setAlignment(Pos.TOP_CENTER);
 
-		// DONE: implement a return button, and let a parameter to check if
-		// it is gameOver or just that leaderBoard button is clicked
 		Label title;
 		if (inputScore) {
 			title = new Label("Game Over");
@@ -367,21 +372,12 @@ public class Main extends Application {
 
 		}
 
-		// "Play Again" button
-
-		/** @TODO Image is purple so we need to make play icon white */
-//		ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/play-icon.png")));
-//		playIcon.setPreserveRatio(true);
-//		playIcon.setFitWidth(12);
-
-		HBox actionButtons;
-
 		Button menuButton = new Button("Menu");
 		menuButton.setId("menu");
-
 		menuButton.setOnAction(e -> renderMenu());
 
-		// does not display play button if its in leaderboard-only mode
+		// Do not display play button if its in leaderboard-only mode
+		HBox actionButtons;
 		if (inputScore) {
 
 			ImageView playIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/play-icon.png")));
@@ -395,6 +391,7 @@ public class Main extends Application {
 			actionButtons = new HBox(15, menuButton, playButton);
 
 		} else {
+			// Button for changing whether to sort by date or score
 			Button sortModeButton;
 			if (sortMode == GameLeaderboardSortMode.Score || sortMode == GameLeaderboardSortMode.ScoreReversed) {
 				sortModeButton = new Button("by date");
@@ -409,6 +406,7 @@ public class Main extends Application {
 			}
 			sortModeButton.setId("sort-mode");
 
+			// Icon for manipulating sorting direction
 			ImageView sortIcon = null;
 			if (sortMode == GameLeaderboardSortMode.Score || sortMode == GameLeaderboardSortMode.Date) {
 				sortIcon = new ImageView(new Image(getClass().getResourceAsStream("assets/sort-asc-icon.png")));
@@ -420,9 +418,9 @@ public class Main extends Application {
 			sortIcon.setPreserveRatio(true);
 			sortIcon.setFitWidth(14);
 
+			// Reverse the direction for the respective sorting modes
 			Button sortButton = new Button("", sortIcon);
 			sortButton.setId("sort");
-
 			sortButton.setOnAction(e -> {
 				switch (sortMode) {
 					case Score:
@@ -465,7 +463,7 @@ public class Main extends Application {
 		}
 
 		VBox topScoresList = new VBox();
-		// sorting top score list; default = 1 (ascending order)
+		// Display more scores if there's no form taking up space
 		if (inputScore) {
 			listScores(topScoresList, sortMode, 5);
 		} else {
@@ -482,8 +480,10 @@ public class Main extends Application {
 		primaryStage.setScene(leaderboardScene);
 	}
 
-	/*
-	 * @param sorting mode
+	/**
+	 * List a certain amount of scores in a certain order
+	 * 
+	 * @param sortMode Mode for which to sort the scores
 	 */
 	private void listScores(VBox list, GameLeaderboardSortMode sortMode, int numToList) {
 

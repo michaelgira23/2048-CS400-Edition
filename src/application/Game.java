@@ -7,34 +7,57 @@ import java.util.Random;
 /**
  * Keeps track of the internal game state
  * 
- * @author Hanyuan Wu, Michael Gira
+ * @author Hanyuan Wu, Faith Isaac, Quan Nguyen, Michael Gira
  *
  */
 
 public class Game {
 	static final boolean DEBUG = true;
 
+	// Dimensions of the playing board
 	static final int HEIGHT = 4;
 	static final int WIDTH = 4;
+
+	// Main instance to trigger game over sequence
 	private Main main;
-	private int numOfSquare;
+
+	// Number of tiles currently on the board
+	private int numOfSquare = 0;
+
+	// Score of the player
 	private long score = 0;
-	private GameSquare[][] board;
+
+	// Array keeping track of the positions of the game tiles
+	private GameSquare[][] board = new GameSquare[HEIGHT][WIDTH];
+
+	// Random number generator
 	private Random rnd;
-	private boolean isGameOver;
+
+	// Whether game is over
+	private boolean isGameOver = false;
+
+	// Theme handler to play a swiping animation when the player moves
 	private SlideHandler slideHandler = null;
+
+	// Whether the player has moved any tiles during their current move
 	private boolean moved;
 
+	/**
+	 * Initialize with a fresh game of 2048
+	 * 
+	 * @param seed Seed for Java random number generator
+	 * @param main Main instance of game. Will call Main.gameOver() when the player
+	 *             can no longer move
+	 */
 	public Game(int seed, Main main) {
-		if (seed == 0)
+		if (seed == 0) {
 			rnd = new Random();
-		else
+		} else {
 			rnd = new Random(seed);
+		}
 		this.main = main;
-		score = 0;
-		numOfSquare = 0;
-		isGameOver = false;
-		board = new GameSquare[HEIGHT][WIDTH];
+
+		// The game starts with two squares
 		squareGen();
 		squareGen();
 	}
@@ -48,10 +71,17 @@ public class Game {
 		slideHandler = handler;
 	}
 
+	/**
+	 * Generate a square (with a value of either 2 or 4) in an empty space on the
+	 * playing board
+	 * 
+	 * @return Whether there was room to place a square
+	 */
 	private boolean squareGen() {
 		// This should never happen! (Prepared for possible GUI bug)
-		if (numOfSquare == HEIGHT * WIDTH)
+		if (numOfSquare == HEIGHT * WIDTH) {
 			return false;
+		}
 		int value = 2;
 		if (rnd.nextBoolean()) {
 			value = 4;
@@ -71,7 +101,7 @@ public class Game {
 
 	/**
 	 * Helper method checking if game is over based on whether there's any other
-	 * option left to slide.
+	 * option left to slide. Will trigger end-game sequence if game is over.
 	 */
 	private void checkGameOver() {
 		isGameOver = true;
@@ -87,9 +117,11 @@ public class Game {
 					isGameOver = false;
 			}
 		}
-		// DEBUG
-		if (isGameOver && DEBUG)
-			main.gameOver();// System.out.println("Game Over!");
+
+		// Trigger end-game sequence when game is over
+		if (isGameOver) {
+			main.gameOver();
+		}
 	}
 
 	/**
@@ -99,9 +131,11 @@ public class Game {
 	 * @param direction Direction to slide
 	 */
 	public void slide(Direction direction) {
-		// check if any square actually moved
+		// Check if any square actually moved
 		moved = false;
-		List<SlideEvent> slides = new LinkedList<SlideEvent>();
+
+		// Keep track of what has moved
+		List<SlideEvent> slides;
 		switch (direction) {
 			case Up:
 				slides = mergeUp();
@@ -115,11 +149,19 @@ public class Game {
 			case Right:
 				slides = mergeRight();
 				break;
+			default:
+				slides = new LinkedList<SlideEvent>();
+				break;
 		}
-		if (slideHandler != null)
+
+		// Possibly call theme handler to play a sliding animation
+		if (slideHandler != null) {
 			slideHandler.handle(slides);
-		if (moved)
+		}
+
+		if (moved) {
 			squareGen();
+		}
 	}
 
 	/**

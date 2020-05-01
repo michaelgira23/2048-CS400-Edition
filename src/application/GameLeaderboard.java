@@ -5,11 +5,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.PriorityQueue;
 
 import org.json.simple.JSONArray;
@@ -20,38 +18,20 @@ import org.json.simple.parser.ParseException;
 /**
  * A list of the top player scores
  *
- * @author Quan Nguyen
+ * @author Quan Nguyen, Faith Isaac, Michael Gira
  *
  */
-public class GameLeaderboard implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class GameLeaderboard {
 
-	// Priority game leader board
+	// Priority queue of leaderboard, sorted by the highest score
 	private PriorityQueue<PlayerScore> topScores = new PriorityQueue<PlayerScore>();
 
 	/**
-	 * Check if current score is in top score
+	 * Get an array of the top scores sorted by the timestamp they were created
+	 * 
+	 * @param reversed Whether the score order should be reversed
 	 *
-	 * @param currentScore
-	 * @return whether or not it is
-	 */
-	public boolean isTopScore(PlayerScore currentScore) {
-		Iterator<PlayerScore> topScoresIterator = topScores.iterator();
-		while (topScoresIterator.hasNext()) {
-			PlayerScore gameLeaderBoard = topScoresIterator.next();
-			if (currentScore.getScore() >= gameLeaderBoard.getScore()) {
-
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Sorts topScores by timestamp
-	 *
-	 * @return tSort array of topScores sorted by timestamp using comparator
+	 * @return An array of top scores sorted by timestamp
 	 */
 	public PlayerScore[] sortedTopScoresByTime(boolean reversed) {
 		PlayerScore[] pQArray = new PlayerScore[topScores.size()];
@@ -61,7 +41,8 @@ public class GameLeaderboard implements Serializable {
 	}
 
 	/**
-	 * Get an array of the top scores from the leaderboard
+	 * Get an array of the top scores from the leaderboard sorted from highest score
+	 * to lowest
 	 *
 	 * @param reversed Whether the scores should be reversed (least to greatest)
 	 *                 instead of greatest to least.
@@ -79,7 +60,7 @@ public class GameLeaderboard implements Serializable {
 
 	/**
 	 * Add a player's score to the leaderboard. Note: this does not save the new
-	 * leaderboard to file.
+	 * leaderboard to file!
 	 * 
 	 * @param currentScore Name and score of the player
 	 */
@@ -90,8 +71,8 @@ public class GameLeaderboard implements Serializable {
 	/**
 	 * Save the current leaderboard into a specified JSON path.
 	 *
-	 * @param jsonPath
-	 * @throws IOException
+	 * @param jsonPath Path to the JSON file to write to
+	 * @throws IOException If there's an error writing to the JSON path
 	 */
 	@SuppressWarnings("unchecked")
 	public void export(String jsonPath) throws IOException {
@@ -115,8 +96,8 @@ public class GameLeaderboard implements Serializable {
 	}
 
 	/**
-	 * Loads a game leaderboard from a given path. If path doesn't exist, returns
-	 * empty leaderboard.
+	 * Loads and returns a game leaderboard instance according to data from a given
+	 * path. If path doesn't exist, returns empty leaderboard.
 	 *
 	 * @param jsonPath Path to JSON file containing leaderboard data
 	 * @return GameLeaderboard instance with loaded scores, if they exist
@@ -141,6 +122,7 @@ public class GameLeaderboard implements Serializable {
 					Long score = (Long) scoreEntry.get("score");
 					Long timestamp = (Long) scoreEntry.get("timestamp");
 
+					// Check for any missing properties
 					if (name == null || score == null || timestamp == null) {
 						System.out.println("Missing leaderboard JSON property in entry " + i + ". Skipping.");
 						continue;

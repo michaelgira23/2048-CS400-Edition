@@ -1,18 +1,23 @@
 package application;
 
 import java.util.Objects;
-import java.util.Random;
 
 /**
- * A single tile on the game board initialized with a value of 2
+ * Represents a single tile (with a numbered value) on the game board
  * 
- * @author Hanyuan Wu, Michael Gira, Faith
+ * @author Hanyuan Wu, Michael Gira, Faith Isaac
  *
  */
 public class GameSquare {
-  
+
 	private int value;
-	public GameSquare(int value){
+
+	/**
+	 * Initialize a new square with a given value
+	 * 
+	 * @param value
+	 */
+	public GameSquare(int value) {
 		this.value = value;
 	}
 
@@ -44,6 +49,9 @@ public class GameSquare {
 		this.value = value;
 	}
 
+	/**
+	 * Returns whether two game squares have the same value
+	 */
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -54,9 +62,12 @@ public class GameSquare {
 		return value == that.value;
 	}
 
+	/**
+	 * Use the hash code of the square's value
+	 */
 	@Override
 	public int hashCode() {
 		return Objects.hash(value);
-
 	}
+
 }
