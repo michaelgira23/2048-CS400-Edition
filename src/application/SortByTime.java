@@ -5,7 +5,7 @@ import java.util.Comparator;
 /**
  * Comparator to enable sorting by date field in each PlayerScore
  * 
- * @author frisaac
+ * @author Faith Isaac
  *
  */
 public class SortByTime implements Comparator<PlayerScore> {
