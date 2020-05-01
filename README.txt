@@ -18,4 +18,5 @@ Motivation - The problem is that there is not a fun enough, yet intellectually s
 
 Concept - On a 4x4 playing board, the player can slide all the squares up, down, right, and left. If two squares with the same number slide into each other, they will combine into a single square with an incremented number. The player's goal is to combine the numbered squares until they reach 2048. They lose once the playing board is filled up and they can no longer combine any more squares.
 
+
 This project was created by A-Team 68 for CS400, Spring 2020 at the University of Wisconsin-Madison

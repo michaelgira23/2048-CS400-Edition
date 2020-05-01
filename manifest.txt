@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-Created-By: Michael Gira, Hanyuan Wu, Quan Nguyen, Will Cong, Faith Isaac
-Main-Class: application.Main
 
+Created-By: Michael Gira, Quan Nguyen, Hanyuan Wu, William Cong, Faith Isaac
+Main-Class: application.Main
